@@ -1,0 +1,23 @@
+{
+    "name": "discobotty",
+    "version": "0.0.1",
+    "description": "A modular Discord bot",
+    "keywords": [
+        "discord",
+        "mod",
+        "bot"
+    ],
+    "bugs": {
+        "url": "https://github.com/Windsdon/discobotty/issues"
+    },
+    "license": "MIT",
+    "author": "Windsdon (https://github.com/Windsdon)",
+    "contributors": [
+        "Zephy (https://github.com/Zephychan)"
+    ],
+    "main": "bot.js",
+    "repository": "Windsdon/discobotty",
+    "dependencies": {
+
+    }
+}
