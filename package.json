@@ -13,7 +13,8 @@
     "license": "MIT",
     "author": "Windsdon (https://github.com/Windsdon)",
     "contributors": [
-        "Zephy (https://github.com/Zephychan)"
+        "Zephy (https://github.com/Zephychan)",
+        "Fillerix (https://github.com/Fillerix99)"
     ],
     "main": "bot.js",
     "repository": "Windsdon/discobotty",
