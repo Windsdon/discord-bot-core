@@ -20,7 +20,9 @@ function DiscordBotCore(e, callback) {
                 e.mention().respond("You are now on group " + result);
             }
         });
-    }, "Join a group using a key");
+    }, "Join a group using a key", {
+        enableAll: true
+    });
 
     e.register.addCommand(["callme"], ["core.callme"], [{
         id: "name",
