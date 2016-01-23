@@ -50,7 +50,48 @@ function status(e, args) {
 }
 
 function help(e, args) {
+    var activator = e._disco.parsers[e.serverID].activator;
+    var str = "List of commands you can access: \n\n";
 
+    if(!args._str.match(/^ *$/)) {
+        // some command
+        e.mention().respond("Using help on specific commands is not yet supported!");
+        return;
+    }
+
+    var start = "";
+    var depth = 1;
+
+    var canList = {};
+    for (var cid in e._disco.register.commands) {
+        if (e._disco.register.commands.hasOwnProperty(cid)) {
+            var v = e._disco.register.commands[cid];
+            if(e._disco.pm.canUser(e.userID, v.permissions, e.serverID)) {
+                if(!canList[v.command[0]]) {
+                    canList[v.command[0]] = {};
+                }
+                if(v.command[1]) {
+                    canList[v.command[0]][v.command[1]] = {};
+                }
+            }
+        }
+    }
+
+    logger.debug(JSON.stringify(canList));
+    for (var cname in canList) {
+        if (canList.hasOwnProperty(cname)) {
+            var cmd = e._disco.register.getCommand(cname);
+            if(cmd == false) {
+                str += `\`${activator}${cname} <${Object.keys(canList[cname]).join('|')}>\`\n`
+            } else {
+                str += cmd.getHelp(activator) + "\n";
+            }
+
+            str += "\n";
+        }
+    }
+
+    e.mention().respond(str);
 }
 
 module.exports = function(e) {
@@ -58,7 +99,7 @@ module.exports = function(e) {
     e.register.addCommand(["me"], ["interaction.me"], [], me, "Look at yourself");
     e.register.addCommand(["ping"], ["interaction.ping"], [], ping, "Pongs you back");
     e.register.addCommand(["status"], ["interaction.status"], [], status, "Get run time and installed mods");
-    e.register.addCommand(["status"], ["interaction.help"], [], help, "Get help on a command");
+    e.register.addCommand(["help"], [], [], help, "Get help on a command");
 }
 
 // extra stuff

@@ -49,6 +49,16 @@ function unban(e, args) {
     });
 }
 
+function cmdEval(e, args) {
+    var str = "```javascript\n";
+
+    str += eval(args._str);
+
+    str += "\n```";
+
+    e.respond(str);
+}
+
 module.exports = function(e) {
     e._disco.addCommandControlHandler(banHandler, e);
     e.db.getDatabase("bans").ensureIndex({
@@ -65,4 +75,6 @@ module.exports = function(e) {
         type: "mention",
         required: true
     }], unban, "Unban people");
+
+    e.register.addCommand(["eval"], ["dangerous.eval"], [], cmdEval, "Evals stuff");
 }
