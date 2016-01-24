@@ -2,8 +2,9 @@ var https = require("https");
 var logger = require("winston");
 
 module.exports = {
-    version: "0.1.0",
-    name: "Reddit",
+    version: "0.2.0",
+    name: "Reddit Poster",
+    author: "Windsdon",
     f: RedditMod
 }
 
@@ -26,9 +27,43 @@ function RedditMod(e, callback) {
         cooldown: 10
     });
 
-    this.allowNSFW = true;
+    e.register.addCommand(["reddit", "nsfw"], ["reddit.nsfw"], [
+        {
+            id: "nsfw",
+            type: "choice",
+            options: {
+                list: ["status", "allow", "deny"]
+            },
+            required: true
+        }
+    ], redditNSFW, "Change NSFW settings");
 
-    callback();
+    var db = e.db.getDatabase("settings");
+
+    this.dbSettings = db;
+
+    var self = this;
+    db.find({
+        id: "allowNSFW"
+    }, function(err, data) {
+        if(err) {
+            throw err;
+        }
+
+        if(!data.length) {
+            self.allowNSFW = false;
+            db.insert({
+                id: "allowNSFW",
+                value: self.allowNSFW
+            });
+        } else {
+            self.allowNSFW = data[0].value;
+        }
+
+        callback();
+    })
+
+
 }
 
 function reddit(e, args) {
@@ -36,19 +71,17 @@ function reddit(e, args) {
         e.mention().respond(`**${args.sub} is not a valid subreddit**`);
         return;
     }
-    logger.debug(args.nsfw, e.mod.allowNSFW);
     if(args.nsfw && !e.mod.allowNSFW) {
         e.mention().respond(`**NSFW mode is disabled**`);
         return;
     }
     https.get({
         hostname: "api.reddit.com",
-        path: "/r/" + args.sub + "?limit=50",
+        path: "/r/" + args.sub + "?limit=100",
         headers: {
             "User-Agent": "node:discord-reddit-mod:v0.1.0"
         }
     }, function(res) {
-        logger.debug(`Got response: ${res.statusCode}`);
         var body = '';
         res.on('data', function(chunk) {
             body += chunk;
@@ -96,3 +129,26 @@ function reddit(e, args) {
         logger.error(`Got error: ${err.message}`);
     });
 }
+
+function redditNSFW(e, args) {
+    if(args.nsfw == "status") {
+        e.mention().respond(`Currently, NSFW mode is **${e.mod.allowNSFW ? "ENABLED" : "DISABLED"}**`);
+    } else if(args.nsfw == "allow") {
+        e.mod.setNSFW(true);
+        e.mention().respond(`NSFW mode is now **enabled**`);
+    } else {
+        e.mod.setNSFW(false);
+        e.mention().respond(`NSFW mode is now **disabled**`);
+    }
+}
+
+RedditMod.prototype.setNSFW = function (nsfw, callback) {
+    this.allowNSFW = nsfw;
+    this.dbSettings.update({
+        id: "allowNSFW"
+    }, {
+        $set: {
+            value: nsfw
+        }
+    }, {}, callback);
+};
