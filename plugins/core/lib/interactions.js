@@ -56,7 +56,7 @@ function help(e, args) {
     if(!args._str.match(/^ *$/)) {
         // some command
         e.mention().respond("Using help on specific commands is not yet supported!");
-        return;
+        //return;
     }
 
     var start = "";
@@ -103,7 +103,7 @@ module.exports = function(e) {
     e.register.addCommand(["me"], ["interaction.me"], [], me, "Look at yourself");
     e.register.addCommand(["ping"], ["interaction.ping"], [], ping, "Pongs you back");
     e.register.addCommand(["status"], ["interaction.status"], [], status, "Get run time and installed mods");
-    e.register.addCommand(["help"], [], [], help, "Get help on a command");
+    e.register.addCommand(["help"], ["interaction.help"], [], help, "Get help on a command");
 }
 
 // extra stuff

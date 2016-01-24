@@ -24,7 +24,7 @@ function groupList(e, args) {
 }
 
 function groupView(e, args) {
-    var group = e._disco.pm.getGroup(args.group);
+    var group = e._disco.pm.getGroup(args.group, args.where == "here" ? e.serverID : undefined);
 
     if(group == false) {
         e.mention().respond("This group doesn't exist");
@@ -88,7 +88,6 @@ function groupRemove(e, args) {
 }
 
 function groupGrant(e, args) {
-    logger.debug(`"${args.permission}"`);
     if(e._disco.pm.groupGrant(args.permission, args.group, args.where == "here" ? e.serverID : undefined)) {
         e.mention().respond(`Granted \`${args.permission}\` to \`${args.group}\``);
         groupView(e, args);
@@ -124,6 +123,29 @@ function groupUnDeny(e, args) {
     }
 }
 
+function rights(e, args) {
+    var subject = args.user || e.userID;
+
+    var str = "```\nYour permissions:\n";
+    var groups = e._disco.pm.getUserGroups(subject, e.serverID);
+
+    for (var gid in groups) {
+        if (groups.hasOwnProperty(gid)) {
+            str += "    Inherited form " + gid + "\n";
+            str += "        " + groups[gid].permissions.join("\n        ") + "\n";
+        }
+    }
+
+    str += "```";
+
+    e.mention().respond(str);
+}
+
+function groupRights(e, args) {
+    e.text(`[Viewing ${e.getName(args.user)}'s permissions'] `);
+    rights(e, args);
+}
+
 module.exports = function(e) {
     e.register.addCommand(["group", "view"], ["group.view"], [
         {
@@ -139,7 +161,17 @@ module.exports = function(e) {
             },
             required: false
         }
-    ], groupView, "List group members and permissions")
+    ], groupView, "List group members and permissions");
+
+    e.register.addCommand(["rights"], ["group.rights"], [], rights, "See your permissions");
+    e.register.addCommand(["group", "rights"], ["group.view"], [
+        {
+            id: "user",
+            type: "mention",
+            required: false
+        }
+    ], groupRights, "See other's permissions");
+
     e.register.addCommand(["group", "list"], ["group.view"], [], groupList, "List all groups on all servers")
 
     // if you can join a group, you can do anything else
