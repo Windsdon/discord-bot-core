@@ -1,6 +1,6 @@
 var logger = require("winston");
 
-function banHandler(o, e, args, callback) {
+function banHandler(o, e, obj, callback) {
     // bans are global
     var dbBans = o.db.getDatabase("bans");
 
@@ -9,7 +9,7 @@ function banHandler(o, e, args, callback) {
     }, function(err, data) {
         if(err) {
             logger.error(err);
-            callback(true);
+            callback(err);
             return;
         }
 
@@ -18,10 +18,68 @@ function banHandler(o, e, args, callback) {
                 message: "You have been banned for: " + data.reason
             });
         } else {
-            callback(false);
+            callback(null);
         }
 
     })
+}
+
+function cooldownHandler(o, e, obj, callback) {
+    if(!obj.command.options.cooldown) {
+        // no cooldown is set
+        callback(null);
+        return;
+    }
+
+    // get cooldown in milliseconds
+    var cdms = obj.command.options.cooldown * 1000;
+
+    // get the db, server specifc
+    var dbCooldown = o.db.getDatabase("cooldown", e.serverID);
+
+    // get current cooldown
+    dbCooldown.find({
+        uid: e.userID,
+        cmd: obj.command.getID()
+    }, function(err, data) {
+        var now = (new Date()).getTime();
+
+        if(err) {
+            logger.error(err);
+            callback(err);
+            return;
+        }
+        
+        if(data.length == 0) {
+            // insert new cooldown
+            dbCooldown.insert({
+                uid: e.userID,
+                cmd: obj.command.getID(),
+                time: now
+            }, function(err) {
+                callback(err);
+            });
+        } else {
+            // check if in cooldown
+            if(now - data[0].time < cdms) {
+                callback({
+                    message: "You are doing that too fast!"
+                });
+                return;
+            } else {
+                dbCooldown.update({
+                    uid: e.userID,
+                    cmd: obj.command.getID()
+                }, {
+                    $set: {
+                        time: now
+                    }
+                }, {}, function(err, data) {
+                    callback(err);
+                });
+            }
+        }
+    });
 }
 
 function ban(e, args) {
@@ -61,10 +119,12 @@ function cmdEval(e, args) {
 
 module.exports = function(e) {
     e._disco.addCommandControlHandler(banHandler, e);
+    e._disco.addCommandControlHandler(cooldownHandler, e);
+
     e.db.getDatabase("bans").ensureIndex({
         fieldName: "uid",
         unique: true
-    })
+    });
     e.register.addCommand(["ban"], ["control.ban"], [{
         id: "user",
         type: "mention",

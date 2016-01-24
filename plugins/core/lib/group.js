@@ -78,6 +78,15 @@ function groupCreate(e, args) {
     }
 }
 
+function groupRemove(e, args) {
+    if(e._disco.pm.createRemove(args.group, args.where == "here" ? e.serverID : undefined)) {
+        e.mention().respond(`Removed group \`${args.group}\``);
+        groupView(e, args);
+    } else {
+        e.mention().respond(`Failed to create group \`${args.group}\``);
+    }
+}
+
 function groupGrant(e, args) {
     logger.debug(`"${args.permission}"`);
     if(e._disco.pm.groupGrant(args.permission, args.group, args.where == "here" ? e.serverID : undefined)) {
@@ -184,7 +193,20 @@ module.exports = function(e) {
         }
     ], groupCreate, "Create a group");
 
-    e.register.addCommand(["group", "remove"], ["group.manage"]);
+    e.register.addCommand(["group", "remove"], ["group.manage"], [
+        {
+            id: "group",
+            type: "string",
+            required: true
+        }, {
+            id: "where",
+            type: "choice",
+            options: {
+                list: ["here"]
+            },
+            required: false
+        }
+    ], groupRemove, "Delete a group");
 
     e.register.addCommand(["group", "grant"], ["group.manage"], [
         {

@@ -41,7 +41,7 @@ function status(e, args) {
     var plugins = Object.keys(e._disco.plugins.plugins);
     plugins.forEach(function(v) {
         var info = e._disco.plugins.pluginInfo[v];
-        str += `    ${info.name} (${v}) v${info.version}\n`;
+        str += `    ${info.name} (${v}) v${info.version} ${info.author ? "(by " + info.author + ")" : ""}\n`;
     });
 
     str += "\n```";
@@ -51,7 +51,7 @@ function status(e, args) {
 
 function help(e, args) {
     var activator = e._disco.parsers[e.serverID].activator;
-    var str = "List of commands you can access: \n\n";
+    var str = "```\nList of commands you can access: \n\n";
 
     if(!args._str.match(/^ *$/)) {
         // some command
@@ -77,19 +77,23 @@ function help(e, args) {
         }
     }
 
-    logger.debug(JSON.stringify(canList));
     for (var cname in canList) {
         if (canList.hasOwnProperty(cname)) {
             var cmd = e._disco.register.getCommand(cname);
             if(cmd == false) {
-                str += `\`${activator}${cname} <${Object.keys(canList[cname]).join('|')}>\`\n`
+                str += `${activator}${cname} <${Object.keys(canList[cname]).join('|')}>\n`
             } else {
-                str += cmd.getHelp(activator) + "\n";
+                str += `${activator}${cname} ${cmd.params.getHelp()}\n    ${cmd.help}`;
+                if(cmd.help != "") {
+                    str += "\n";
+                }
             }
 
             str += "\n";
         }
     }
+
+    str += "```";
 
     e.mention().respond(str);
 }
