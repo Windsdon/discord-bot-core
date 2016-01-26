@@ -1,6 +1,6 @@
 {
-  "name": "discobotty",
-  "version": "0.4.0",
+  "name": "discord-bot-core",
+  "version": "0.4.1",
   "description": "A modular Discord bot",
   "keywords": [
     "discord",
@@ -8,7 +8,7 @@
     "bot"
   ],
   "bugs": {
-    "url": "https://github.com/Windsdon/discobotty/issues"
+    "url": "https://github.com/Windsdon/discord-bot-core/issues"
   },
   "license": "MIT",
   "author": "Windsdon (https://github.com/Windsdon)",
@@ -17,7 +17,10 @@
     "Fillerix (https://github.com/Fillerix99)"
   ],
   "main": "bot.js",
-  "repository": "Windsdon/discobotty",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/windsdon/discord-bot-core.git"
+  },
   "dependencies": {
     "async": "^1.5.2",
     "crypto-js": "^3.1.6",
@@ -26,5 +29,10 @@
     "nedb": "^1.7.1",
     "semver": "^5.1.0",
     "winston": "^2.1.1"
+  },
+  "homepage": "https://github.com/windsdon/discord-bot-core#readme",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
