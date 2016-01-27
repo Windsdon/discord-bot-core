@@ -1,11 +1,12 @@
 var logger = require("winston");
+var async = require("async");
 
-function banHandler(o, e, obj, callback) {
+function banHandler(e, o, callback) {
     // bans are global
-    var dbBans = o.db.getDatabase("bans");
+    var dbBans = e.db.getDatabase("bans");
 
     dbBans.find({
-        uid: e.userID
+        uid: o.userID
     }, function(err, data) {
         if(err) {
             logger.error(err);
@@ -24,23 +25,23 @@ function banHandler(o, e, obj, callback) {
     })
 }
 
-function cooldownHandler(o, e, obj, callback) {
-    if(!obj.command.options.cooldown) {
+function cooldownHandler(e, o, callback) {
+    if(!o.obj.command.options.cooldown) {
         // no cooldown is set
         callback(null);
         return;
     }
 
     // get cooldown in milliseconds
-    var cdms = obj.command.options.cooldown * 1000;
+    var cdms = o.obj.command.options.cooldown * 1000;
 
     // get the db, server specifc
-    var dbCooldown = o.db.getDatabase("cooldown", e.serverID);
+    var dbCooldown = e.db.getDatabase("cooldown", e.serverID);
 
     // get current cooldown
     dbCooldown.find({
-        uid: e.userID,
-        cmd: obj.command.getID()
+        uid: o.userID,
+        cmd: o.obj.command.getID()
     }, function(err, data) {
         var now = (new Date()).getTime();
 
@@ -49,12 +50,12 @@ function cooldownHandler(o, e, obj, callback) {
             callback(err);
             return;
         }
-        
+
         if(data.length == 0) {
             // insert new cooldown
             dbCooldown.insert({
-                uid: e.userID,
-                cmd: obj.command.getID(),
+                uid: o.userID,
+                cmd: o.obj.command.getID(),
                 time: now
             }, function(err) {
                 callback(err);
@@ -68,8 +69,8 @@ function cooldownHandler(o, e, obj, callback) {
                 return;
             } else {
                 dbCooldown.update({
-                    uid: e.userID,
-                    cmd: obj.command.getID()
+                    uid: o.userID,
+                    cmd: o.obj.command.getID()
                 }, {
                     $set: {
                         time: now
@@ -118,8 +119,8 @@ function cmdEval(e, args) {
 }
 
 module.exports = function(e) {
-    e._disco.addCommandControlHandler(banHandler, e);
-    e._disco.addCommandControlHandler(cooldownHandler, e);
+    e._disco.addCommandHandler(async.apply(banHandler, e), "start");
+    e._disco.addCommandHandler(async.apply(cooldownHandler, e), "end");
 
     e.db.getDatabase("bans").ensureIndex({
         fieldName: "uid",
