@@ -79,11 +79,11 @@ function groupCreate(e, args) {
 }
 
 function groupRemove(e, args) {
-    if(e._disco.pm.createRemove(args.group, args.where == "here" ? e.serverID : undefined)) {
+    if(e._disco.pm.removeGroup(args.group, args.where == "here" ? e.serverID : undefined)) {
         e.mention().respond(`Removed group \`${args.group}\``);
         groupView(e, args);
     } else {
-        e.mention().respond(`Failed to create group \`${args.group}\``);
+        e.mention().respond(`Failed to remove group \`${args.group}\``);
     }
 }
 
