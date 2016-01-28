@@ -8,12 +8,24 @@ function groupList(e, args) {
     for (var group in cache) {
         if (cache.hasOwnProperty(group)) {
             str += `Group ${group}\n`;
-            str += "    ";
             var list = [];
             var users = e._disco.pm.getUsersInGroup(group);
+            if(cache[group].roles && cache[group].roles.length != 0) {
+                str += `    Role links: `;
+                var roles = [];
+                cache[group].roles.forEach(function(v) {
+                    roles.push(e.roleName(v, null));
+                })
+                str += roles.join(", ") + "\n";
+            }
+            if(cache[group].group == "guest") {
+                str += `    Ignoring ${users.length} users in this guest group\n`;
+                continue;
+            }
             users.forEach(function(v) {
                 list.push(e.getName(v));
             });
+            str += "    ";
             str += list.join(", ") + "\n";
         }
     }
@@ -145,6 +157,36 @@ function groupRights(e, args) {
     e.text(`[Viewing ${e.getName(args.user)}'s permissions'] `);
     rights(e, args);
 }
+
+function groupRoleList(e, args) {
+    var roles = e.getRoles(null);
+
+    var str = "";
+    for (var rid in roles) {
+        if (roles.hasOwnProperty(rid)) {
+            str += `${rid} as ${roles[rid].name.replace("@", "[at]")}\n`
+        }
+    }
+
+    e.mention().text("List of server roles:\n").code(str).respond();
+}
+
+function groupRoleAdd(e, args) {
+    if(e._disco.pm.roleAdd(args.group, args.where == "here" ? e.serverID : undefined, args.role)) {
+        e.mention().respond(`Linked \`${args.role}\` and \`${args.group}\``);
+    } else {
+        e.mention().respond("Failed to do that!");
+    }
+}
+
+function groupRoleRemove(e, args) {
+    if(e._disco.pm.roleAdd(args.group, args.where == "here" ? e.serverID : undefined, args.role)) {
+        e.mention().respond(`Unlinked \`${args.role}\` and \`${args.group}\``);
+    } else {
+        e.mention().respond("Failed to do that!");
+    }
+}
+
 
 module.exports = function(e) {
     e.register.addCommand(["group", "view"], ["group.view"], [
@@ -315,5 +357,45 @@ module.exports = function(e) {
             required: false
         }
     ], groupUnDeny, "Remove denies from a group");
+
+    e.register.addCommand(["group", "role", "list"], ["group.roles"], [], groupRoleList, "List server roles");
+
+    e.register.addCommand(["group", "role", "add"], ["group.manage"], [
+        {
+            id: "group",
+            type: "string",
+            required: true
+        }, {
+            id: "role",
+            type: "string",
+            required: true
+        }, {
+            id: "where",
+            type: "choice",
+            options: {
+                list: ["here"]
+            },
+            required: false
+        }
+    ], groupRoleAdd, "Link a role to a group");
+
+    e.register.addCommand(["group", "role", "remove"], ["group.manage"], [
+        {
+            id: "group",
+            type: "string",
+            required: true
+        }, {
+            id: "role",
+            type: "string",
+            required: true
+        }, {
+            id: "where",
+            type: "choice",
+            options: {
+                list: ["here"]
+            },
+            required: false
+        }
+    ], groupRoleRemove, "Unlink a group from a role");
 
 }

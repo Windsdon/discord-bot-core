@@ -6,7 +6,7 @@ function say(e, args) {
         return;
     }
 
-    e.respond(args._str);
+    e.deleteMessage().respond(args._str);
 }
 
 function me(e, args) {

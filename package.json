@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-core",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "A modular Discord bot",
   "keywords": [
     "discord",
@@ -13,7 +13,7 @@
   "license": "MIT",
   "author": "Windsdon (https://github.com/Windsdon)",
   "contributors": [
-    "Zephy (https://github.com/Zephychan)",
+    "Zephy (https://github.com/Zephyrrus)",
     "Fillerix (https://github.com/Fillerix99)"
   ],
   "main": "bot.js",
