@@ -53,25 +53,37 @@ function help(e, args) {
     var activator = e._disco.parsers[e.serverID].activator;
     var str = "```\nList of commands you can access: \n\n";
 
+    var start = "";
+    var depth = 0;
+
     if(!args._str.match(/^ *$/)) {
-        // some command
-        e.mention().respond("Using help on specific commands is not yet supported!");
-        //return;
+        start = args._str.replace(/ +/gi, '.');
+        depth = start.split(".").length;
+        logger.debug(start, depth);
     }
 
-    var start = "";
-    var depth = 1;
 
     var canList = {};
     for (var cid in e._disco.register.commands) {
         if (e._disco.register.commands.hasOwnProperty(cid)) {
+            if(cid.indexOf(start) != 0) {
+                continue;
+            }
             var v = e._disco.register.commands[cid];
             if(e._disco.pm.canUser(e.userID, v.permissions, e.serverID)) {
-                if(!canList[v.command[0]]) {
-                    canList[v.command[0]] = {};
+                var k = [];
+                for(var i = 0; i <= depth; i++) {
+                    if(!v.command[i]) {
+                        break;
+                    }
+                    k.push(v.command[i]);
                 }
-                if(v.command[1]) {
-                    canList[v.command[0]][v.command[1]] = {};
+                var k = k.join(".");
+                if(!canList[k]) {
+                    canList[k] = {};
+                }
+                if(v.command[depth + 1]) {
+                    canList[k][v.command[depth + 1]] = {};
                 }
             }
         }
@@ -80,13 +92,19 @@ function help(e, args) {
     for (var cname in canList) {
         if (canList.hasOwnProperty(cname)) {
             var cmd = e._disco.register.getCommand(cname);
-            if(cmd == false) {
-                str += `${activator}${cname} <${Object.keys(canList[cname]).join('|')}>\n`
-            } else {
-                str += `${activator}${cname} ${cmd.params.getHelp()}\n    ${cmd.help}`;
+            var c = cname.replace(".", " ");
+            if(cmd != false) {
+                str += `${activator}${c} ${cmd.params.getHelp()}\n    ${cmd.help}`;
                 if(cmd.help != "") {
                     str += "\n";
                 }
+            }
+
+            if(Object.keys(canList[cname]).length != 0) {
+                if(cmd) {
+                    str += "\n";
+                }
+                str += `${activator}${c} <${Object.keys(canList[cname]).join('|')}>\n`
             }
 
             str += "\n";
