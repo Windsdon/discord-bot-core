@@ -5,7 +5,7 @@ module.exports = {
     version: "0.2.0",
     name: "Reddit Poster",
     author: "Windsdon",
-    f: RedditMod
+    init: RedditMod
 }
 
 function RedditMod(e, callback) {

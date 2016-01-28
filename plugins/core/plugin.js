@@ -136,6 +136,6 @@ module.exports = {
     version: "0.2.0",
     name: "Discord Bot Core",
     author: "Windsdon",
-    f: DiscordBotCore,
+    init: DiscordBotCore,
     setup: setup
 }

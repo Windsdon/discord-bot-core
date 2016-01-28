@@ -6,7 +6,7 @@ module.exports = {
     version: "0.1.0",
     name: "Live Interface",
     author: "Windsdon",
-    f: LiveMod
+    init: LiveMod
 }
 
 function LiveMod(e, callback) {

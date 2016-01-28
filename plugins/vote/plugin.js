@@ -6,7 +6,7 @@ module.exports = {
     version: "0.1.0",
     name: "Voting",
     author: "Windsdon",
-    f: VoteMod
+    init: VoteMod
 }
 
 function VoteMod(e, callback) {
