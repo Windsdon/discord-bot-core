@@ -67,6 +67,9 @@ From now on, you can start using your bot! Use `!help` to see a list of availabl
 
 # Changelog
 
+**v0.6.0**
+- Changed callback on `e.respond()` to `callback(err, response)`
+
 **v0.5.0**
 - Added `plugins/plugins.txt`
   - Used as a load list

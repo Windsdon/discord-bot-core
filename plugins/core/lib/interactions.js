@@ -22,7 +22,11 @@ function me(e, args) {
 }
 
 function ping(e, args) {
-    e.mention().respond("Pong!", function(response){
+    e.mention().respond("Pong!", function(err, response){
+        if(err) {
+            e.code(err.message).respond();
+            return;
+        }
         var time = (new Date(response.timestamp)).getTime() - (new Date(e.rawEvent.d.timestamp)).getTime()
 
         e.mention().editMessage(response.id, e.channelID, `Pong! *${time}ms*`);

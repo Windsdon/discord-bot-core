@@ -7,6 +7,10 @@ function groupList(e, args) {
 
     for (var group in cache) {
         if (cache.hasOwnProperty(group)) {
+            if(cache[group].group == "guest") {
+                // ignore guest groups
+                continue;
+            }
             str += `Group ${group}\n`;
             var list = [];
             var users = e._disco.pm.getUsersInGroup(group);
@@ -18,6 +22,7 @@ function groupList(e, args) {
                 })
                 str += roles.join(", ") + "\n";
             }
+            // I may change back in the future
             if(cache[group].group == "guest") {
                 str += `    Ignoring ${users.length} users in this guest group\n`;
                 continue;

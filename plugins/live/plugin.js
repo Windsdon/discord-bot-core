@@ -69,9 +69,9 @@ LiveMod.prototype.LiveMessage = function (e, args, fn, callback) {
         callback = callback || ()=>{};
         var self = this;
         if(!self._liveid) {
-            self._respond(message, function(response) {
-                if(!response.id) {
-                    logger.error(response);
+            self._respond(message, function(err, response) {
+                if(!response || !response.id) {
+                    logger.error(err);
                     callback(response);
                     return;
                 }
