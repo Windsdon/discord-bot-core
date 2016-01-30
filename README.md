@@ -1,6 +1,8 @@
 # discord-bot-core
 discord-bot-core is a modular bot for Discord servers
 
+[![NPM](https://nodei.co/npm/discord-bot-core.png?downloads=true)](https://nodei.co/npm/discord-bot-core/)
+
 Top features include:
 - Completely modular design
 - Built-in server-specific permission system
@@ -15,6 +17,53 @@ Top features include:
 - Server-specific databases (or you can make it global)
 
 More documentation to come.
+
+# Getting Started
+Install [Node](https://nodejs.org/en/).
+
+[Download](https://github.com/Windsdon/discord-bot-core/archive/master.zip) the current version of the bot, and extract it somewhere.
+
+Using  the command line, navigate to the directory that contains `package.json`, and execute:
+```
+npm install
+```
+This will install all dependencies of the package.
+
+Create an account for your bot, if don't have one yet.
+Next, create a file named `login.txt` with your bot's Discord login information, following this format:
+```
+your-bots-email@something.com:your-bots-password
+```
+
+and then run
+```
+node bot
+```
+
+It everything went well, you should see something like
+```
+info: Starting
+info: Creating bot instance
+info: Generating key
+No token provided, and unable to parse 'tenc'. Using login method.
+info: Connected as Your Bot - (<some numbers>)
+info: Reloading permissions
+info: Finished reloading permissions
+info: Loading 4 plugins
+info: Loading plugin core
+info: Added permission * to group 0:root
+info: Your auth key is 3a05c5b4c14277e2006a645d389e439cb0c37694c0d193fc558fa1ab32aab79a. Use it to get root privileges.
+info: Completed setup for core
+...
+```
+
+Take note of your auth key, as you'll need it to get root access on your bot.
+
+Send a PM to your bot with `!authkey <your key here>`, and you should see a reply telling that you are now root.
+
+From now on, you can start using your bot! Use `!help` to see a list of available commands.
+
+**Remeber!** You need to enable your bot on a channel to use most commands! Do this by running `!enable`
 
 # Changelog
 
