@@ -2,3 +2,5 @@ core
 live
 reddit
 vote
+hs
+baseconverter
