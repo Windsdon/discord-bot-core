@@ -192,6 +192,49 @@ function groupRoleRemove(e, args) {
     }
 }
 
+function permissions(e, args) {
+    if(args.command) {
+        var id = args.command.replace(/ +/gi, ".");
+        if(!e._disco.register.commands[id]) {
+            e.mention().respond("That command doesn't exist!");
+            return;
+        }
+
+        var str = "```Listing permissions for command: " + id + "\n ";
+
+        var list = e._disco.register.commands[id].permissions.permissions;
+
+        str += "    " + list.join("\n    ") + "";
+
+        str += "```";
+        e.respond(str);
+    } else {
+        var str = "```Listing permissions on each plugin\n\n";
+        for (var mod in e._disco.plugins.plugins) {
+            if (e._disco.plugins.plugins.hasOwnProperty(mod)) {
+                str += `${mod}\n`
+                var list = [];
+                for (var cmd in e._disco.register.commands) {
+                    if (e._disco.register.commands.hasOwnProperty(cmd)) {
+                        var command = e._disco.register.commands[cmd];
+                        if(command.mod == mod) {
+                            command.permissions.permissions.forEach(function(v) {
+                                if(list.indexOf(v) == -1) {
+                                    list.push(v);
+                                }
+                            });
+                        }
+                    }
+                }
+
+                str += "    " + list.join("\n    ") + "\n\n";
+            }
+        }
+
+        str += "```";
+        e.respond(str);
+    }
+}
 
 module.exports = function(e) {
     e.register.addCommand(["group", "view"], ["group.view"], [
@@ -215,7 +258,7 @@ module.exports = function(e) {
         {
             id: "user",
             type: "mention",
-            required: false
+            required: true
         }
     ], groupRights, "See other's permissions");
 
@@ -402,5 +445,13 @@ module.exports = function(e) {
             required: false
         }
     ], groupRoleRemove, "Unlink a group from a role");
+
+    e.register.addCommand(["permissions"], ["permissions.view"], [
+        {
+            id: "command",
+            type: "string",
+            required: false
+        }
+    ], permissions, "List permissions required to run a command");
 
 }
