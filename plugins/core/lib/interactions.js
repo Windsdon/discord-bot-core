@@ -120,12 +120,60 @@ function help(e, args) {
     e.mention().respond(str);
 }
 
+function uid(e, args) {
+    if(!args.name) {
+        e.mention().respond("Your UID is `" + e.userID + "`");
+        return;
+    }
+
+    var rx = new RegExp(args.name, 'gi');
+    var regex = new RegExp();
+
+    var users = [];
+    var uids = [];
+    for (var sid in e._disco.bot.servers) {
+        if (e._disco.bot.servers.hasOwnProperty(sid)) {
+            for (var uid in e._disco.bot.servers[sid].members) {
+                if (e._disco.bot.servers[sid].members.hasOwnProperty(uid)) {
+                    var name = e._disco.bot.servers[sid].members[uid].user.username;
+                    if(uids.indexOf(uid) == -1 && rx.test(name)) {
+                        users.push({
+                            name: name,
+                            uid: uid
+                        });
+                        uids.push(uid);
+                    }
+                }
+            }
+        }
+    }
+
+    var str = "";
+    if(users.length == 0) {
+        str = "I couldn't find anyone that matches `" + args.name + "`";
+    } else {
+        str = "I found these:\n\n";
+        users.forEach(function(v) {
+            str += `**${v.name}**: \`${v.uid}\`\n`;
+        });
+    }
+
+    e.mention().n().respond(str);
+}
+
 module.exports = function(e) {
     e.register.addCommand(["say"], ["interaction.say"], [], say, "Says your message");
     e.register.addCommand(["me"], ["interaction.me"], [], me, "Look at yourself");
     e.register.addCommand(["ping"], ["interaction.ping"], [], ping, "Pongs you back");
     e.register.addCommand(["status"], ["interaction.status"], [], status, "Get run time and installed mods");
     e.register.addCommand(["help"], ["interaction.help"], [], help, "Get help on a command");
+    e.register.addCommand(["uid"], ["interaction.uid"], [
+        {
+            id: "name",
+            type: "string",
+            required: false
+        }
+    ], uid, "Return the uid without pinging. Name is a regex.");
 }
 
 // extra stuff
