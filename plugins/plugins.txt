@@ -4,3 +4,6 @@ reddit
 vote
 hs
 baseconverter
+ciphers
+define
+misc
