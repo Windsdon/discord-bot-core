@@ -2,7 +2,7 @@ var logger = require("winston");
 var CryptoJS = require("crypto-js");
 
 module.exports = {
-    version: "1.1.0",
+    version: "1.2.0",
     name: "Misc",
     author: "Windsdon",
     init: MiscMod
@@ -18,6 +18,7 @@ function MiscMod(e, callback) {
         }
     ], size, "Get your size");
     e.register.addCommand(["lenny"], ["misc.lenny"], [], lenny, "( ͡° ͜ʖ ͡°)");
+    e.register.addCommand(["wtf"], ["misc.wtf"], [], wtf, "ಠ_ಠ");
     callback();
 }
 
@@ -43,4 +44,8 @@ function size(e, args) {
 
 function lenny(e, args) {
     e.respond("( ͡° ͜ʖ ͡°)");
+}
+
+function wtf(e, args) {
+    e.respond("ಠ_ಠ");
 }

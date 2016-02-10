@@ -1,7 +1,7 @@
 var logger = require("winston");
 
 module.exports = {
-    version: "1.0.0",
+    version: "1.0.1",
     name: "Define",
     author: "Windsdon",
     init: DefineMod
@@ -49,6 +49,8 @@ function defSetSource(e, args) {
             } else {
                 e.mention().respond("Nothing changed");
             }
+        } else {
+            logger.error(err);
         }
     });
 }
