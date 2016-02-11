@@ -133,7 +133,7 @@ function setup(e, callback) {
 
 
 module.exports = {
-    version: "0.2.0",
+    version: "1.0.0",
     name: "Discord Bot Core",
     author: "Windsdon",
     init: DiscordBotCore,

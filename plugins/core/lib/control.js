@@ -26,7 +26,7 @@ function banHandler(e, o, callback) {
 }
 
 function cooldownHandler(e, o, callback) {
-    if(!o.obj.command.options.cooldown) {
+    if(!o.obj.command.options.cooldown || e._disco.pm.canUser(o.userID, "override.cooldown", o.serverID)) {
         // no cooldown is set
         callback(null);
         return;
@@ -83,6 +83,21 @@ function cooldownHandler(e, o, callback) {
     });
 }
 
+function whitelistOverride(e, o, callback) {
+    logger.debug(`override for ${o.userID} on ${o.serverID}`);
+    if(e._disco.pm.canUser(o.userID, ["override.whitelist"], o.serverID)) {
+        logger.debug("YES");
+        if(o.obj.command.options) {
+            o.obj.command.options.enableAll = true;
+        } else {
+            o.obj.command.options = {
+                enableAll: true
+            }
+        }
+    }
+    callback(null);
+}
+
 function ban(e, args) {
     e.db.getDatabase("bans").insert({
         uid: args.user,
@@ -121,6 +136,7 @@ function cmdEval(e, args) {
 module.exports = function(e) {
     e._disco.addCommandHandler(async.apply(banHandler, e), "start");
     e._disco.addCommandHandler(async.apply(cooldownHandler, e), "end");
+    e._disco.addCommandHandler(async.apply(whitelistOverride, e), "parsed");
 
     e.db.getDatabase("bans").ensureIndex({
         fieldName: "uid",
