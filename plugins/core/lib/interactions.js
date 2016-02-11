@@ -117,7 +117,8 @@ function help(e, args) {
 
     str += "```";
 
-    e.mention().respond(str);
+    e.mention().pm(str);
+    e.mention().respond("Check you PMs!");
 }
 
 function uid(e, args) {

@@ -58,6 +58,10 @@ function groupView(e, args) {
         list.push(e.getName(v));
     });
 
+    if(list.length > 30) {
+        list = ["Too many users to list (" + users.length + ")!"];
+    }
+
     str += "        " + list.join("\n        ") + "\n";
 
     str +="    Permissions:\n";
