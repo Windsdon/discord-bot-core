@@ -8,3 +8,4 @@ ciphers
 define
 misc
 zero
+whois
