@@ -6,7 +6,7 @@ var Buffer = require('buffer').Buffer;
 var fs = require("fs");
 
 module.exports = {
-    version: "1.0.0",
+    version: "1.0.1",
     name: "Zerochan scrapper",
     author: "Windsdon",
     init: ZeroMod
@@ -47,7 +47,7 @@ function zeroGrab(e, args) {
                 if($("#children").length != 0) { // results page
                     var path = $("#children").find("li").first().find("a").first().attr("href");
                     logger.debug(`${url} redirects to ${path}`);
-                    e.mention().respond(`Assuming ${args.name} reffers to ${path.replace(/\//g, '').replace(/\+/g, ' ')}`);
+                    e.mention().respond(`Assuming ${args.name} reffers to ${decodeURIComponent(path.replace(/\//g, '').replace(/\+/g, ' '))}`);
                     getPage("http://zerochan.net" + path, callback);
                     return;
                 }
