@@ -84,9 +84,8 @@ function cooldownHandler(e, o, callback) {
 }
 
 function whitelistOverride(e, o, callback) {
-    logger.debug(`override for ${o.userID} on ${o.serverID}`);
     if(e._disco.pm.canUser(o.userID, ["override.whitelist"], o.serverID)) {
-        logger.debug("YES");
+        logger.debug(`override for ${o.userID} on ${o.serverID}`);
         if(o.obj.command.options) {
             o.obj.command.options.enableAll = true;
         } else {
@@ -134,7 +133,7 @@ function cmdEval(e, args) {
 }
 
 module.exports = function(e) {
-    e._disco.addCommandHandler(async.apply(banHandler, e), "start");
+    e._disco.addCommandHandler(async.apply(banHandler, e), "end");
     e._disco.addCommandHandler(async.apply(cooldownHandler, e), "end");
     e._disco.addCommandHandler(async.apply(whitelistOverride, e), "parsed");
 

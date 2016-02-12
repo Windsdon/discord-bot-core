@@ -7,6 +7,7 @@ function DiscordBotCore(e, callback) {
     require("./lib/interactions")(e);
     require("./lib/servers")(e);
     require("./lib/control")(e);
+    require("./lib/log")(e);
 
     e.register.addCommand(["authkey"], [], [{
         id: "key",
@@ -133,7 +134,7 @@ function setup(e, callback) {
 
 
 module.exports = {
-    version: "1.0.0",
+    version: "1.1.0",
     name: "Discord Bot Core",
     author: "Windsdon",
     init: DiscordBotCore,
