@@ -154,9 +154,13 @@ function uid(e, args) {
         str = "I couldn't find anyone that matches `" + args.name + "`";
     } else {
         str = "I found these:\n\n";
-        users.forEach(function(v) {
-            str += `**${v.name}**: \`${v.uid}\`\n`;
-        });
+        if(users.length > 20) {
+            str += "**Too many users to list! (" + users.length + ")**";
+        } else {
+            users.forEach(function(v) {
+                str += `**${v.name}**: \`${v.uid}\`\n`;
+            });
+        }
     }
 
     e.mention().n().respond(str);
