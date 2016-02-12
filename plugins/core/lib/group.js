@@ -152,7 +152,7 @@ function rights(e, args) {
 
     for (var gid in groups) {
         if (groups.hasOwnProperty(gid)) {
-            str += "    Inherited form " + gid + "\n";
+            str += "    Inherited from " + gid + "\n";
             str += "        " + groups[gid].permissions.join("\n        ") + "\n";
         }
     }

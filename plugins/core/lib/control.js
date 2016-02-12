@@ -86,13 +86,7 @@ function cooldownHandler(e, o, callback) {
 function whitelistOverride(e, o, callback) {
     if(e._disco.pm.canUser(o.userID, ["override.whitelist"], o.serverID)) {
         logger.debug(`override for ${o.userID} on ${o.serverID}`);
-        if(o.obj.command.options) {
-            o.obj.command.options.enableAll = true;
-        } else {
-            o.obj.command.options = {
-                enableAll: true
-            }
-        }
+        o._overrideWhitelist = true;
     }
     callback(null);
 }
