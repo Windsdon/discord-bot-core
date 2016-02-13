@@ -9,3 +9,4 @@ define
 misc
 zero
 whois
+emotes
