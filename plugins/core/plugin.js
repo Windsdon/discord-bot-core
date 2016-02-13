@@ -9,6 +9,10 @@ function DiscordBotCore(e, callback) {
     require("./lib/control")(e);
     require("./lib/log")(e);
 
+    e.register.addCommand(["kill"], ["dangerous.kill"], [], function() {
+        process.exit(0);
+    }, "Kill the bot");
+
     e.register.addCommand(["authkey"], [], [{
         id: "key",
         type: "string",
@@ -134,7 +138,7 @@ function setup(e, callback) {
 
 
 module.exports = {
-    version: "1.1.2",
+    version: "1.2.0",
     name: "Discord Bot Core",
     author: "Windsdon",
     init: DiscordBotCore,
