@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.0.0",
+    version: "1.0.1",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -61,7 +61,9 @@ function whoisHandler(e, o, callback) {
                     $push: {
                         old: o.user
                     },
-                    name: o.user
+                    $set: {
+                        name: o.user
+                    }
                 }, {}, function(err, num) {
                     if(err) {
                         logger.error(err);
