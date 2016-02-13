@@ -4,7 +4,7 @@ var fs = require("fs");
 var request = require("request");
 
 module.exports = {
-    version: "1.0.0",
+    version: "1.0.1",
     name: "Emotes",
     author: "Windsdon",
     init: EmoteMod
@@ -68,6 +68,7 @@ function emotesHandler(e, o, callback) {
         }
 
         var files = [];
+        var msgEmotes = [];
 
         async.forEachOf(list, function(v, i, cb) {
             dbEmotes.find({
@@ -79,11 +80,14 @@ function emotesHandler(e, o, callback) {
                     return;
                 }
                 if(data.length != 0) {
-                    try {
-                        var f = fs.createReadStream(path + "/" + data[0].filename);
-                        files.push(f);
-                    } catch(err) {
-                        logger.error(err);
+                    if(msgEmotes.indexOf(data[0].id) == -1) {
+                        msgEmotes.push(data[0].id);
+                        try {
+                            var f = fs.createReadStream(path + "/" + data[0].filename);
+                            files.push(f);
+                        } catch(err) {
+                            logger.error(err);
+                        }
                     }
                 }
                 cb();
