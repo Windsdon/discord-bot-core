@@ -80,7 +80,9 @@ function VoteMod(e, callback) {
             type: "string",
             required: false
         }
-    ], vote, "Vote on something. If no id is given, uses the current active vote. Can be used on private messages with the bot.");
+    ], vote, "Vote on something. If no id is given, uses the current active vote. Can be used on private messages with the bot.", {
+        enableAll: true
+    });
 
     e.register.addCommand(["vote", "remind"], ["vote.remind"], [], voteRemind, "Show active vote information");
 
