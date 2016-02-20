@@ -98,7 +98,9 @@ function emotesHandler(e, o, callback) {
             });
         }, function(err) {
             if(!err) {
-                e._disco.logOnChannel(makeLog(o, msgEmotes))
+                if(msgEmotes.length != 0) {
+                    e._disco.logOnChannel(makeLog(o, msgEmotes))
+                }
                 files.forEach(function(v) {
                     e._disco.queueFile(o.channelID, v);
                 });
