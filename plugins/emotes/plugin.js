@@ -4,7 +4,7 @@ var fs = require("fs");
 var request = require("request");
 
 module.exports = {
-    version: "1.0.1",
+    version: "1.1.0",
     name: "Emotes",
     author: "Windsdon",
     init: EmoteMod
@@ -40,6 +40,10 @@ function EmoteMod(e, callback) {
     e.register.addCommand(["emote", "disable"], ["emote.config.disable"], [], emoteDisable, "Disable emote parsing");
 
     callback();
+}
+
+function makeLog(o, list) {
+    return `**${o.user}** on channel <#${o.channelID}> generated emotes ${list.join(", ")}`;
 }
 
 // emotes db:
@@ -94,6 +98,7 @@ function emotesHandler(e, o, callback) {
             });
         }, function(err) {
             if(!err) {
+                e._disco.logOnChannel(makeLog(o, msgEmotes))
                 files.forEach(function(v) {
                     e._disco.queueFile(o.channelID, v);
                 });

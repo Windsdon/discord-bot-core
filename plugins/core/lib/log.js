@@ -3,6 +3,9 @@ var async = require("async");
 
 module.exports = function(e) {
     e._disco.addCommandHandler(async.apply(logHandler, e), "end");
+    e._disco.logOnChannel = function(message) {
+        logOnChannel(e, message);
+    }
 
     e.register.addCommand(["log"], ["log.set"], [{
         id: "action",
@@ -14,6 +17,33 @@ module.exports = function(e) {
     }], logSet, "Config log");
 }
 
+function makeLog(o) {
+    return `**${o.user}** on channel <#${o.channelID}> ran \`${o.message.replace(/[^\\]`/gi, "\`")}\``;
+}
+
+function logOnChannel(e, message, channelID) {
+    if(channelID) {
+        e._disco.queueMessage(channelID, `*${(new Date()).toString()}*\n` + message);
+    } else {
+        var dbLog = e.db.getDatabase("log");
+        dbLog.find({
+            config: "where"
+        }, function(err, data) {
+            if(err) {
+                logger.error(err);
+                return;
+            }
+
+            if(data.length == 1) {
+                // log to channel
+                e._disco.queueMessage(data[0].value, `*${(new Date()).toString()}*\n` + message);
+            }
+        });
+    }
+
+
+}
+
 function logHandler(e, o, callback) {
     var dbLog = e.db.getDatabase("log");
 
@@ -22,16 +52,13 @@ function logHandler(e, o, callback) {
     }, function(err, data) {
         if(err) {
             logger.error(err);
-            callback(err);
             return;
         }
 
         if(data.length == 1) {
             // log to channel
-            e._disco.queueMessage(data[0].value, makeLog());
+            logOnChannel(e, makeLog(o), data[0].value);
         }
-
-        callback(null);
     });
 
     dbLog.find({
@@ -39,7 +66,6 @@ function logHandler(e, o, callback) {
     }, function(err, data) {
         if(err) {
             logger.error(err);
-            callback(err);
             return;
         }
 
@@ -53,9 +79,11 @@ function logHandler(e, o, callback) {
         }
     });
 
-    function makeLog() {
-        return `*${(new Date()).toString()}*\n**${o.user}** on channel <#${o.channelID}> ran \`${o.message.replace(/[^\\]`/gi, "\`")}\``;
+    o.e.logOnChannel = function(message) {
+        logOnChannel(o.e, message);
     }
+
+    callback();
 }
 
 function logSet(e, args) {
