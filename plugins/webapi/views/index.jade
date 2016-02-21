@@ -1,0 +1,48 @@
+doctype html
+html
+	head
+		include ./includes/header.jade
+
+		title Discord Bot
+body
+	#wrapper
+		nav.navbar.navbar-default.navbar-static-top(role="navigation", style="margin-bottom: 0")
+			.navbar-header
+				button(type="button", class="navbar-toggle", data-toggle="collapse", data-target=".navbar-collapse")
+					span.sr-only Toggle Navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand(href="/") Discord Bot Admin Panel
+			ul.nav.navbar-top-links.navbar-right
+				li.dropdown
+					a.dropdown-toggle(data-toggle="dropdown", href="#", style="padding:5px")
+						img(src= user.avatarURL, width="40px", height="40px", style="border-radius:20px")
+						span= " " + user.user.username + " "
+						i.fa.fa-caret-down
+					ul.dropdown-menu.dropdown-user
+						li
+							a(href="/logout")
+								i.fa.fa-sign-out.fa-fw
+								| Logout
+			.navbar-default.sidebar(role="navigation")
+				.sidebar-nav.navbar-collapse.in
+					ul#side-menu.nav.in
+						li.sidebar-search
+							.input-group.custom-search-form
+								input(type="text", class="form-control", placeholder="Search...")
+								span.input-group-btn
+									button.btn.btn-default(type="button")
+										i.fa.fa-search
+						li
+							a(href="/")
+								i.fa.fa-dashboard.fa-fw
+								| Dashboard
+		.page-wrapper
+			.content-fluid
+				.row
+					.col-lg-12
+						h1 page.title
+				= content
+
+	include ./includes/footer_scripts.jade

@@ -1,10 +1,13 @@
-setInterval(function() {
-    console.log("execute");
+var interval = setInterval(function() {
     $.ajax("/api/logincheck", {
         dataType: "json",
         success: function(data) {
             if(data.user) {
-                location = "/";
+                $("#loginCommand").hide();
+                $("#userAvatar").attr("src", data.user.avatarURL);
+                $("#username").text(data.user.username);
+                $("#loginSuccess").show();
+                clearInterval(interval);
             }
         }
     })

@@ -10,18 +10,19 @@ function User(uid, mod) {
 
 User.prototype.load = function () {
     var obj = this.mod.e._disco.getUser(this.uid);
-    logger.debug(JSON.stringify(obj));
 
     if(!obj) {
         this.uid = null;
         return;
     }
 
+    obj.avatarURL = "https://cdn.discordapp.com/avatars/" + obj.id + "/" + obj.avatar + ".jpg";
+
     this.user = obj;
 
-    for (var o in obj.user) {
-        if (obj.user.hasOwnProperty(o)) {
-            this[o] = obj.user[o];
+    for (var o in obj) {
+        if (obj.hasOwnProperty(o)) {
+            this[o] = obj[o];
         }
     }
 };

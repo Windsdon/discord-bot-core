@@ -22,6 +22,7 @@ function SessionManager(e, callback) {
 
         docs.forEach(function(val) {
             self.sessions[val.sid] = new Session(val, self);
+            logger.debug("Loaded session " + JSON.stringify(self.sessions[val.sid].getValues()));
         });
 
         callback && callback();
@@ -35,12 +36,10 @@ SessionManager.prototype._update = function (session) {
 
     this.sessions[session.sid] = session;
 
-    var copy = {};
-    var list = ["sid", "uid", "key"];
 
-    list.forEach(function(v) {
-        copy[v] = session[v];
-    });
+    var copy = session.getValues();
+
+    logger.debug("Save session " + JSON.stringify(copy));
 
     this.dbs.update({
         sid: session.sid
@@ -73,11 +72,14 @@ SessionManager.prototype.getSession = function (opt) {
     }
 
     if(opt.key) {
+        logger.debug("Search for key " + opt.key);
         for (var i in this.sessions) {
-            if (this.sessions.hasOwnProperty(i)) {
+            if (this.sessions.hasOwnProperty(i) && this.sessions[i].key == opt.key) {
+                logger.debug("Found: " + JSON.stringify(this.sessions[i].getValues()));
                 return this.sessions[i];
             }
         }
+        logger.debug("No luck!");
     }
 
     return undefined;
@@ -100,4 +102,16 @@ function Session(data, manager) {
 
 Session.prototype.save = function () {
     this.manager._update(this);
+};
+
+Session.prototype.getValues = function () {
+    var copy = {};
+    var list = ["sid", "uid", "key"];
+    var self = this;
+
+    list.forEach(function(v) {
+        copy[v] = self[v];
+    });
+
+    return copy
 };
