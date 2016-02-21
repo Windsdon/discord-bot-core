@@ -1,3 +1,4 @@
+include ./includes/sidebar.jade
 doctype html
 html
 	head
@@ -34,15 +35,14 @@ body
 								span.input-group-btn
 									button.btn.btn-default(type="button")
 										i.fa.fa-search
-						li
-							a(href="/")
-								i.fa.fa-dashboard.fa-fw
-								| Dashboard
-		.page-wrapper
-			.content-fluid
-				.row
-					.col-lg-12
-						h1 page.title
-				= content
+						- each nav in sidebar
+							+sidebarNavItem(nav)
+
+		#page-wrapper
+			.row
+				.col-lg-12
+					h1.page-header= page.title
+			.row=page.content
 
 	include ./includes/footer_scripts.jade
+	script(type="text/javascript", src="/mod/js/loader.js")

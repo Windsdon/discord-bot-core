@@ -1,0 +1,14 @@
+mixin subnav(list)
+	ul.nav.nav-second-level
+		- each item in list
+			li: a(href=item.url)= item.label
+
+mixin sidebarNavItem(nav)
+	li
+		a(href=nav.url)
+			i(class="fa fa-fw fa-" + nav.icon)
+			=" " + nav.label
+			if nav.list
+				span.fa.arrow
+		if nav.list
+			+subnav(nav.list)

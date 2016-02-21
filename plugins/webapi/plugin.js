@@ -104,7 +104,6 @@ var oneyear = 1000 * 60 * 60 * 24 * 365;
 
 WebMod.prototype.createSession = function (res) {
     var session = this.sessions.createSession();
-    logger.debug("Session ID: " + session.sid);
     res.cookie('sid', session.sid, {
         maxAge: oneyear
     });
@@ -114,7 +113,6 @@ WebMod.prototype.getSession = function (req, res, next) {
     req.mod = this;
 
     if(!req.cookies || !req.cookies.sid) {
-        logger.debug("No session! Create a new one!");
         this.createSession(res);
 
         //redirect to login page
@@ -126,7 +124,6 @@ WebMod.prototype.getSession = function (req, res, next) {
     var session = this.sessions.getSession(req.cookies.sid);
 
     if(!session) {
-        logger.debug("Invalid session! Create a new one!");
         this.createSession(res);
 
         //redirect to login page
@@ -166,7 +163,6 @@ WebMod.prototype.processAuth = function (req, res) {
 };
 
 WebMod.prototype.processApi = function (req, res) {
-    logger.debug("Call to api: " + req.params.path);
     res.set('Content-Type', 'application/json');
     res.status(200);
     if(!req.session) {
@@ -179,8 +175,18 @@ WebMod.prototype.processApi = function (req, res) {
         return;
     }
 
-    var name = req.params.path.replace(/\//gi, '.').replace(/\/$/, '')
-    var endpoint = this.endpoints[name];
+    var name = req.params.path.replace(/\//gi, '.').replace(/\/$/, '');
+    var parts = name.split(".");
+
+    var endpoint = null;
+    var id = "";
+    for(var i = 0; i < parts.length; i++) {
+        var newID = parts.slice(0, i + 1).join(".");
+        if(this.endpoints[newID]) {
+            id = newID;
+            endpoint = this.endpoints[newID];
+        }
+    }
 
     if(!endpoint) {
         res.send(JSON.stringify({
@@ -192,10 +198,11 @@ WebMod.prototype.processApi = function (req, res) {
         return;
     }
 
-    logger.debug("Calling endpoint: " + name);
+    logger.debug("Calling endpoint: " + id);
 
-    endpoint(req, res);
-    res.end();
+    endpoint(req, res, function() {
+        res.end();
+    });
 };
 
 WebMod.prototype.processHome = function (req, res) {
@@ -206,7 +213,23 @@ WebMod.prototype.processHome = function (req, res) {
     res.status(200);
 
     res.render('index', {
-        user: req.user
+        user: req.user,
+        page: {
+            title: "",
+            content: ""
+        },
+        sidebar: [
+            {
+                icon: "dashboard",
+                label: "Dashboard",
+                url: "/"
+            }, {
+                icon: "server",
+                label: "Servers",
+                url: "#servers",
+                list: this.getServerNav(req.session)
+            }
+        ]
     });
 };
 
@@ -222,4 +245,40 @@ WebMod.prototype.processLogout = function (req, res) {
     res.clearCookie('sid');
     res.redirect('/auth');
     res.end();
+};
+
+WebMod.prototype.getUserServers = function (uid) {
+    var self = this;
+    var list = {};
+
+    for (var sid in this.e._disco.bot.servers) {
+        if (this.e._disco.bot.servers.hasOwnProperty(sid)) {
+            var server = this.e._disco.bot.servers[sid];
+            if(Object.keys(server.members).indexOf(uid) != -1) {
+                list[server.id] = server;
+            }
+        }
+    }
+
+    return list;
+};
+
+WebMod.prototype.getServerNav = function (session) {
+    var servers = this.getUserServers(session.uid);
+
+    var nav = [{
+        label: "All Servers",
+        url: "#servers"
+    }];
+
+    for (var sid in servers) {
+        if (servers.hasOwnProperty(sid)) {
+            nav.push({
+                label: servers[sid].name,
+                url: "#server/" + sid
+            });
+        }
+    }
+
+    return nav;
 };
