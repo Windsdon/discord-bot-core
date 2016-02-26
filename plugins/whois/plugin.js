@@ -2,13 +2,14 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.0.1",
+    version: "1.1.0",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
 }
 
 function WhoisMod(e, callback) {
+    this._e = e;
     e._disco.addCommandHandler(async.apply(whoisHandler, e), "start");
 
     e.register.addCommand(["whois"], ["whois.id"], [
@@ -34,6 +35,7 @@ function WhoisMod(e, callback) {
 
     e.register.addCommand(["whois", "enable"], ["whois.config.enable"], [], whoisEnable, "Enable alias parsing");
     e.register.addCommand(["whois", "disable"], ["whois.config.disable"], [], whoisDisable, "Disable alias parsing");
+    e.register.addCommand(["whois", "fix"], ["whois.fix"], [], whoisFix, "Update all users");
 
     callback();
 }
@@ -45,6 +47,7 @@ function WhoisMod(e, callback) {
 function whoisHandler(e, o, callback) {
     var dbUsers = e.db.getDatabase("names");
     var dbAlias = e.db.getDatabase("alias", o.serverID);
+    callback = callback || () => {};
 
     dbUsers.find({
         uid: o.userID
@@ -55,12 +58,8 @@ function whoisHandler(e, o, callback) {
         }
 
         if(data.length != 0) {
-            if(data[0].old.indexOf(o.user) == -1) {
-                // add new alias
+            if(data[0].name != o.user) {
                 dbUsers.update({ _id: data[0]._id }, {
-                    $push: {
-                        old: o.user
-                    },
                     $set: {
                         name: o.user
                     }
@@ -70,7 +69,20 @@ function whoisHandler(e, o, callback) {
                     }
                 });
             }
+            if(data[0].old.indexOf(o.user) == -1) {
+                // add new alias
+                dbUsers.update({ _id: data[0]._id }, {
+                    $push: {
+                        old: o.user
+                    }
+                }, {}, function(err, num) {
+                    if(err) {
+                        logger.error(err);
+                    }
+                });
+            }
         } else {
+            logger.debug("Insert: " + JSON.stringify(o));
             dbUsers.insert({
                 uid: o.userID,
                 name: o.user,
@@ -142,6 +154,7 @@ function whoisID(e, args) {
     dbUsers.find({
         uid: args.user
     }, function(err, data) {
+        logger.debug(JSON.stringify(data));
         if(err) {
             e.mention().text("This didn't work:\n").code(err.message).respond();
             return;
@@ -230,4 +243,22 @@ function _whoisSetEnable(db, value, cb) {
             value: value
         }
     }, { upsert: true }, cb);
+}
+
+function whoisFix(e, args) {
+    var users = e._disco.pm.getAllUsers();
+    var self = this;
+    users.forEach(function(v) {
+        var user = e._disco.getUser(v);
+        if(user) {
+            whoisHandler(e.mod._e, {
+                userID: user.id,
+                user: user.username,
+                serverID: e.serverID,
+                message: ""
+            });
+        }
+    });
+
+    e.respond("Updated " + users.length + " users");
 }

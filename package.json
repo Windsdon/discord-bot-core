@@ -25,13 +25,13 @@
     "async": "^1.5.2",
     "cheerio": "^0.20.0",
     "crypto-js": "^3.1.6",
-    "discord.io": "^1.7.1",
-    "fibers": "^1.0.8",
+    "discord.io": "^1.8.0",
+    "fibers": "^1.0.10",
     "iconv": "^2.1.11",
-    "nedb": "^1.7.1",
+    "nedb": "^1.8.0",
     "request": "^2.69.0",
     "semver": "^5.1.0",
-    "winston": "^2.1.1"
+    "winston": "^2.2.0"
   },
   "homepage": "https://github.com/windsdon/discord-bot-core#readme",
   "devDependencies": {},
