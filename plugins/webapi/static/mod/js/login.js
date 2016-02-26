@@ -2,10 +2,10 @@ var interval = setInterval(function() {
     $.ajax("/api/logincheck", {
         dataType: "json",
         success: function(data) {
-            if(data.user) {
+            if(data.response && data.response.user) {
                 $("#loginCommand").hide();
-                $("#userAvatar").attr("src", data.user.avatarURL);
-                $("#username").text(data.user.username);
+                $("#userAvatar").attr("src", data.response.user.avatarURL);
+                $("#username").text(data.response.user.username);
                 $("#loginSuccess").show();
                 clearInterval(interval);
             }

@@ -41,8 +41,8 @@ body
 		#page-wrapper
 			.row
 				.col-lg-12
-					h1.page-header= page.title
-			.row=page.content
+					h1#page-header.page-header= page.title
+			.row#page-content=page.content
 
 	include ./includes/footer_scripts.jade
 	script(type="text/javascript", src="/mod/js/loader.js")

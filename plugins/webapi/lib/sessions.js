@@ -72,14 +72,11 @@ SessionManager.prototype.getSession = function (opt) {
     }
 
     if(opt.key) {
-        logger.debug("Search for key " + opt.key);
         for (var i in this.sessions) {
             if (this.sessions.hasOwnProperty(i) && this.sessions[i].key == opt.key) {
-                logger.debug("Found: " + JSON.stringify(this.sessions[i].getValues()));
                 return this.sessions[i];
             }
         }
-        logger.debug("No luck!");
     }
 
     return undefined;

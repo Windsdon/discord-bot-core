@@ -26,3 +26,7 @@ User.prototype.load = function () {
         }
     }
 };
+
+User.prototype.getServers = function () {
+    return this.mod.getUserServers(this.uid);
+};

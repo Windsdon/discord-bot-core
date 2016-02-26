@@ -1,11 +1,22 @@
-mixin subnav(list)
-	ul.nav.nav-second-level
+mixin subSubNav(list)
+	ul.nav.nav-third-level.collapse
 		- each item in list
 			li: a(href=item.url)= item.label
 
+mixin subnav(list)
+	ul.nav.nav-second-level
+		- each item in list
+			li
+				a(href=item.url || false)
+					= item.label
+					if item.list
+						span.fa.arrow
+				if item.list
+					+subSubNav(item.list)
+
 mixin sidebarNavItem(nav)
 	li
-		a(href=nav.url)
+		a(href=nav.url || false)
 			i(class="fa fa-fw fa-" + nav.icon)
 			=" " + nav.label
 			if nav.list

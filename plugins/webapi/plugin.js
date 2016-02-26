@@ -29,6 +29,7 @@ function WebMod(e, callback) {
 
     this.sessions = new SessionManager(e);
     this.endpoints = require("./lib/endpoints");
+    this.pages = [];
 
     this.e = e;
 
@@ -142,6 +143,15 @@ WebMod.prototype.getSession = function (req, res, next) {
 
     req.session = session;
     req.user = this.getUser(req.session.uid);
+
+    res.error = function(message) {
+        this.json({
+            error: {
+                message: message
+            }
+        });
+    }
+
     next();
 };
 
@@ -162,18 +172,20 @@ WebMod.prototype.processAuth = function (req, res) {
 
 };
 
-WebMod.prototype.processApi = function (req, res) {
-    res.set('Content-Type', 'application/json');
-    res.status(200);
+WebMod.prototype.processApi = function (req, res, callback) {
     if(!req.session) {
-        res.send(JSON.stringify({
+        res.json({
             error: {
                 message: "Invalid session"
             }
-        }));
+        });
         res.end();
+        callback();
         return;
     }
+
+    logger.debug(JSON.stringify(req.params));
+    req.params.path += req.params[0];
 
     var name = req.params.path.replace(/\//gi, '.').replace(/\/$/, '');
     var parts = name.split(".");
@@ -189,19 +201,21 @@ WebMod.prototype.processApi = function (req, res) {
     }
 
     if(!endpoint) {
-        res.send(JSON.stringify({
+        res.json({
             error: {
                 message: "Invalid endpoint: " + name
             }
-        }));
+        });
         res.end();
+        callback();
         return;
     }
 
-    logger.debug("Calling endpoint: " + id);
+    logger.debug("Calling endpoint: " + id, "WEB_API");
 
     endpoint(req, res, function() {
         res.end();
+        callback();
     });
 };
 
@@ -212,24 +226,36 @@ WebMod.prototype.processHome = function (req, res) {
 
     res.status(200);
 
+    var sidebar = [
+        {
+            icon: "dashboard",
+            label: "Dashboard",
+            url: "#dashboard"
+        }, {
+            icon: "server",
+            label: "Servers",
+            url: "#servers",
+            list: this.getServerNav(req.session)
+        }
+    ];
+
+    this.pages.forEach(function(v) {
+        if(v.enable && v.enable.sidebar && (!v.permissions || this._disco.pm.canUser(v.permissions))) {
+            sidebar.push({
+                icon: v.icon,
+                label: v.label,
+                url: "#page/" + v.id
+            });
+        }
+    });
+
     res.render('index', {
         user: req.user,
         page: {
             title: "",
             content: ""
         },
-        sidebar: [
-            {
-                icon: "dashboard",
-                label: "Dashboard",
-                url: "/"
-            }, {
-                icon: "server",
-                label: "Servers",
-                url: "#servers",
-                list: this.getServerNav(req.session)
-            }
-        ]
+        sidebar: sidebar
     });
 };
 
@@ -266,10 +292,12 @@ WebMod.prototype.getUserServers = function (uid) {
 WebMod.prototype.getServerNav = function (session) {
     var servers = this.getUserServers(session.uid);
 
-    var nav = [{
-        label: "All Servers",
-        url: "#servers"
-    }];
+    var nav = [
+        // {
+        //     label: "All Servers",
+        //     url: "#servers"
+        // }
+    ];
 
     for (var sid in servers) {
         if (servers.hasOwnProperty(sid)) {
@@ -281,4 +309,16 @@ WebMod.prototype.getServerNav = function (session) {
     }
 
     return nav;
+};
+
+WebMod.prototype.registerWidget = function (widget, target) {
+
+};
+
+WebMod.prototype.getWidgets = function (target) {
+
+};
+
+WebMod.prototype.registerPage = function (page) {
+
 };
