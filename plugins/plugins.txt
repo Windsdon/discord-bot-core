@@ -11,3 +11,6 @@ zero
 whois
 emotes
 deviant
+flip
+dialog
+e621
