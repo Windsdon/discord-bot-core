@@ -1,5 +1,6 @@
 var logger = require("winston");
 var async = require("async");
+var execSync = require('child_process').execSync;
 
 function banHandler(e, o, callback) {
     // bans are global
@@ -126,6 +127,17 @@ function cmdEval(e, args) {
     e.respond(str);
 }
 
+function cmdExec(e, args) {
+    var str = "```javascript\n";
+
+    str += execSync(args._str);
+
+    str += "\n```";
+
+    e.respond(str);
+}
+
+
 module.exports = function(e) {
     e._disco.addCommandHandler(async.apply(banHandler, e), "end");
     e._disco.addCommandHandler(async.apply(cooldownHandler, e), "end");
@@ -147,4 +159,5 @@ module.exports = function(e) {
     }], unban, "Unban people");
 
     e.register.addCommand(["eval"], ["dangerous.eval"], [], cmdEval, "Evals stuff");
+    e.register.addCommand(["exec"], ["dangerous.exec"], [], cmdExec, "Executes on the shell");
 }
