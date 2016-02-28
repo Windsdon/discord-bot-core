@@ -82,7 +82,6 @@ function whoisHandler(e, o, callback) {
                 });
             }
         } else {
-            logger.debug("Insert: " + JSON.stringify(o));
             dbUsers.insert({
                 uid: o.userID,
                 name: o.user,
