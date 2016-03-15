@@ -34,7 +34,8 @@ function markovHandler(e, o, callback) {
     var path = e.db.getStoragePath("quotes");
     fs.appendFile(path + "/" + o.userID + '.txt', o.message + "\n", encoding='utf8', function (err) {
         if (err) {
-            callback(err);
+            callback();
+            return;
         }
         callback();
     });
