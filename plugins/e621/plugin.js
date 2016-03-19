@@ -10,11 +10,25 @@ module.exports = {
 
 
 function e621Mod(e, callback) {
-    e.register.addCommand(["furry"], ["e621Grab.grab"], [{
-        id: "tags",
-        type: "multistr",
-        required: true
-    }], e621Grab, "Get a furry!");
+    e.register.addCommand(["furry"], ["e621Grab.grab"], [
+        {
+            id: "flags",
+            type: "flags",
+            options: {
+                list: [
+                    "nsfw"
+                ],
+                opts: {
+                    boolean: true
+                }
+            }
+        },
+        {
+            id: "tags",
+            type: "multistr",
+            required: true
+        }
+    ], e621Grab, "Get a furry!");
 
     callback();
 }
@@ -44,10 +58,15 @@ function getJson(url, callback) {
 }
 
 function e621Grab(e, args) {
-    var nsfw = false; // no nsfw for now xD
+    var nsfw = args.flags.nsfw || false;
     var tags = args.tags.join(" ");
     if(!nsfw) {
         tags = tags.replace(/(\+|-)?rating:\w*/gi, '') + " rating:s"
+    } else {
+        if(!e.canUser("nsfw.e621")) {
+            e.mention().respond("You can't use the nsfw flag!");
+            return;
+        }
     }
     var url = "https://e621.net/post/index.json?tags=" + encodeURIComponent(tags);
 

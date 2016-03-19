@@ -29,7 +29,10 @@ function WhoisMod(e, callback) {
         {
             id: "nick",
             type: "string",
-            required: false
+            required: false,
+            options: {
+                validation: /^\w+$/
+            }
         }
     ], whoisSet, "Set user alias");
 
