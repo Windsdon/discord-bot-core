@@ -14,6 +14,15 @@ function MarkovMod(e, callback) {
     e._disco.addCommandHandler(async.apply(markovHandler, e), "start");
     e.register.addCommand(["imitate"], ["markov.imitate"], [
         {
+            id: "flags",
+            type: "flags",
+            options: {
+                list: [
+                    "size"
+                ]
+            }
+        },
+        {
             id: "user",
             type: "mention",
             required: true
@@ -43,6 +52,10 @@ function markovHandler(e, o, callback) {
 
 function imitate(e, args) {
     var path = e.db.getStoragePath("quotes");
+    var size = args.flags.size || 10;
+    if(size > 30) {
+        size = 30;
+    }
     try {
         var quotes = new MarkovChain(fs.readFileSync(path + "/" + args.user + '.txt', 'utf8'), function(word) {
             return word.replace(/[^A-Za-z0-9'çÇÃãÕõÉéóÓÚúÍíáÁ!@#$<>]/gi, '')
@@ -51,12 +64,12 @@ function imitate(e, args) {
         var txt = "";
 
         if(args.start) {
-            txt = quotes.start(args.start).end(10).process();
+            txt = quotes.start(args.start).end(size).process();
         } else {
             txt = quotes.start(function(wordList) {
                 var tmpList = Object.keys(wordList);
                 return tmpList[~~(Math.random()*tmpList.length)]
-            }).end(10).process();
+            }).end(size).process();
         }
 
         e.respond(txt + " - *" + e.getName(args.user) + "*");
