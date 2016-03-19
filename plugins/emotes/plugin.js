@@ -4,7 +4,7 @@ var fs = require("fs");
 var request = require("request");
 
 module.exports = {
-    version: "1.1.0",
+    version: "1.2.0",
     name: "Emotes",
     author: "Windsdon",
     init: EmoteMod
@@ -17,7 +17,10 @@ function EmoteMod(e, callback) {
         {
             id: "id",
             type: "string",
-            required: true
+            required: true,
+            options: {
+                validation: /^\w+$/
+            }
         },
         {
             id: "url",
@@ -127,19 +130,21 @@ function emoteAdd(e, args) {
     var stream = request(args.url).on('response', function(response) {
         if(response.statusCode != 200) {
             e.mention().respond("That link is invalid - Status Code: " + response.statusCode);
+        } else {
+            stream.pipe(fs.createWriteStream(fpath)).on('finish', function () {
+                dbEmotes.update({
+                    uid: args.user
+                }, {
+                    id: args.id,
+                    filename: fname
+                }, { upsert: true }, function(err, numReplaced, upsert) {
+                    e.mention().respond("Emote added!");
+                });
+            });
         }
     }).on('error', function(err) {
         logger.error(err);
         e.code(err.message);
-    }).pipe(fs.createWriteStream(fpath)).on('finish', function () {
-        dbEmotes.update({
-            uid: args.user
-        }, {
-            id: args.id,
-            filename: fname
-        }, { upsert: true }, function(err, numReplaced, upsert) {
-            e.mention().respond("Emote added!");
-        });
     });
 }
 
