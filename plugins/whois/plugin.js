@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.1.0",
+    version: "1.2.0",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -16,7 +16,7 @@ function WhoisMod(e, callback) {
         {
             id: "user",
             type: "mention",
-            required: true
+            required: false
         }
     ], whoisID, "View user aliases");
 
@@ -150,6 +150,8 @@ function whoisID(e, args) {
     var dbAlias = e.db.getDatabase("alias", e.serverID);
     var dbUsers = e.db.getDatabase("names");
 
+    args.user = args.user || e.userID;
+
     var str = "";
 
     //get alias
@@ -170,9 +172,18 @@ function whoisID(e, args) {
 
         var d = data[0];
 
-        str += "**Username:** " + d.name + "\n";
+        var mentionedUser = e._disco.bot.servers[e.serverID].members[args.user];
+
+        str += "**Username:** " + e.clean(d.name) + "\n";
         str += "**UID:** " + d.uid + "\n";
-        str += "**Previous names:** " + d.old.join(", ") + "\n";
+        str += "**Previous names:** " + e.clean(d.old.join(", ")) + "\n\n";
+        str += `**Discriminator:** ${mentionedUser.user.discriminator}\n`;
+        str += `**Avatar URL:** https://cdn.discordapp.com/avatars/${mentionedUser.user.id}/${mentionedUser.user.avatar}.jpg\n`
+        str += `**Joined at:** ${new Date(Date.parse(mentionedUser.joined_at))}\n`
+        str += `**Current status:** ${mentionedUser.status ? mentionedUser.status: "Offline"}\n`;
+        if (mentionedUser.game != null) {
+            str += `**Playing:** ${e.clean(mentionedUser.game.name)}\n`
+        }
 
         dbAlias.find({
             uid: d.uid
