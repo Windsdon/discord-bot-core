@@ -29,13 +29,14 @@
     "fibers": "^1.0.10",
     "iconv": "^2.1.11",
     "markovchain": "^1.0.2",
+    "minimist": "^1.2.0",
     "nedb": "^1.8.0",
     "request": "^2.69.0",
     "semver": "^5.1.0",
     "winston": "^2.2.0"
   },
   "optionalDependencies": {
-      "canvas": "^1.3.10"
+    "canvas": "^1.3.10"
   },
   "homepage": "https://github.com/windsdon/discord-bot-core#readme",
   "devDependencies": {},
