@@ -172,18 +172,37 @@ function whoisID(e, args) {
 
         var d = data[0];
 
-        var mentionedUser = e._disco.bot.servers[e.serverID].members[args.user];
 
         str += "**Username:** " + e.clean(d.name) + "\n";
         str += "**UID:** " + d.uid + "\n";
         str += "**Previous names:** " + e.clean(d.old.join(", ")) + "\n\n";
-        str += `**Discriminator:** ${mentionedUser.user.discriminator}\n`;
-        str += `**Avatar URL:** https://cdn.discordapp.com/avatars/${mentionedUser.user.id}/${mentionedUser.user.avatar}.jpg\n`
-        str += `**Joined at:** ${new Date(Date.parse(mentionedUser.joined_at))}\n`
-        str += `**Current status:** ${mentionedUser.status ? mentionedUser.status: "Offline"}\n`;
-        if (mentionedUser.game != null) {
-            str += `**Playing:** ${e.clean(mentionedUser.game.name)}\n`
+        var mentionedUser = e._disco.bot.servers[e.serverID].members[args.user];
+        if(mentionedUser === undefined) {
+            str += "**This user is not from this server**\n\n";
+            for (var sid in e._disco.bot.servers) {
+                if (e._disco.bot.servers.hasOwnProperty(sid)) {
+                    if(e._disco.bot.servers[sid].members[args.user]) {
+                        mentionedUser = e._disco.bot.servers[sid].members[args.user];
+                    }
+                }
+            }
         }
+
+        if(mentionedUser) {
+            try {
+                str += `**Discriminator:** ${mentionedUser.user.discriminator}\n`;
+                str += `**Avatar URL:** https://cdn.discordapp.com/avatars/${mentionedUser.user.id}/${mentionedUser.user.avatar}.jpg\n`
+                str += `**Joined at:** ${new Date(Date.parse(mentionedUser.joined_at))}\n`
+                str += `**Current status:** ${mentionedUser.status ? mentionedUser.status: "Offline"}\n`;
+                if (mentionedUser.game != null) {
+                    str += `**Playing:** ${e.clean(mentionedUser.game.name)}\n`
+                }
+            } catch(err2) {
+
+            }
+        }
+
+
 
         dbAlias.find({
             uid: d.uid
