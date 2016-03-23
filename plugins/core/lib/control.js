@@ -207,6 +207,10 @@ function purge(e, args) {
     }
 
     if(args.flags.all) {
+        if(!e.canUser("control.purge.all")) {
+            e.mention().respond("You can't use the --all flag!");
+            return;
+        }
         function iterate(err, data, last) {
             if(err) {
                 logger.error(err);
