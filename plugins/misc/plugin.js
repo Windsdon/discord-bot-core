@@ -1,5 +1,6 @@
 var logger = require("winston");
 var CryptoJS = require("crypto-js");
+var request = require("request");
 
 module.exports = {
     version: "1.2.0",
@@ -17,6 +18,24 @@ function MiscMod(e, callback) {
             required: false
         }
     ], size, "Get your size");
+    e.register.addCommand(["nt"], ["misc.nt"],[
+        {
+            id: "value",
+            type: "string",
+            required: false,
+            options: {
+                validation: /^(\d+|\d{1,2}\/\d{1,2}|random)$/
+            }
+        },
+        {
+            id: "type",
+            type: "choice",
+            options: {
+                list: ["trivia", "math", "date", "year"]
+            },
+            required: false
+        }
+    ], numbertrivia, "Get some number trivia")
     e.register.addCommand(["lenny"], ["misc.lenny"], [], lenny, "( ͡° ͜ʖ ͡°)");
     e.register.addCommand(["wtf"], ["misc.wtf"], [], wtf, "ಠ_ಠ");
     callback();
@@ -48,4 +67,23 @@ function lenny(e, args) {
 
 function wtf(e, args) {
     e.respond("ಠ_ಠ");
+}
+
+function numbertrivia(e, args) {
+    var url = "http://numbersapi.com/";
+    args.value = args.value || "random";
+    url += args.value;
+
+    if(args.type) {
+        url += "/" + args.type;
+    }
+
+    request(url, function(err, req, body) {
+        if(err) {
+            e.code(err.message).respond();
+            return;
+        }
+
+        e.mention().respond(body);
+    });
 }
