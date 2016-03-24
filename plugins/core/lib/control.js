@@ -142,7 +142,7 @@ function purge(e, args) {
     function remove(before, count, callback) {
         logger.debug("Call to remove before: " + before);
         request({
-            url: "https://ptb.discordapp.com/api/channels/" + e.channelID + "/messages?limit=" + count,
+            url: "https://discordapp.com/api/channels/" + e.channelID + "/messages?limit=" + count + "&before=" + before,
             headers: {
                 authorization: e._disco.bot.internals.token
             }
@@ -231,7 +231,7 @@ function purge(e, args) {
     if(args.user) {
         e.respond("**Purging messages from __" + e.getName(args.user) + "__**");
     } else {
-        e.respond("**Purging message**");
+        e.respond("**Purging messages**");
     }
 
     removeMore(e.rawEvent.d.id, args.count, function(err) {
