@@ -239,6 +239,10 @@ function whoisSet(e, args) {
         uid: args.user,
         alias: args.nick
     }, { upsert: true }, function(err, numReplaced, upsert) {
+        if(err) {
+            e.mention().text("Failed to set alias:").code(err.message).respond();
+            return;
+        }
         e.mention().text("Set ").mention(args.user).respond("to: `" + args.nick + "`");
     });
 }
