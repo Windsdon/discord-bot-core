@@ -7,6 +7,8 @@ module.exports = function(e) {
         logOnChannel(e, message);
     }
 
+    logOnChannel(e, "**Initalizing**");
+
     e.register.addCommand(["log"], ["log.set"], [{
         id: "action",
         type: "choice",
