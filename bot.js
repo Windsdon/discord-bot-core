@@ -12,11 +12,17 @@ try {
 }
 
 logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, {colorize: true});
+logger.add(logger.transports.Console, {
+    colorize: true,
+    handleExceptions: true
+});
 logger.add(logger.transports.File, {
     level: 'debug',
-    filename: fname
+    filename: fname,
+    handleExceptions: true
 });
 logger.level = 'debug';
+
+logger.handleExceptions(new logger.transports.File({ filename: './crash.log' }));
 
 var disco = new DiscordBot();
