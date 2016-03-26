@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.2.0",
+    version: "1.2.1",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -176,7 +176,11 @@ function whoisID(e, args) {
         str += "**Username:** " + e.clean(d.name) + "\n";
         str += "**UID:** " + d.uid + "\n";
         str += "**Previous names:** " + e.clean(d.old.join(", ")) + "\n\n";
-        var mentionedUser = e._disco.bot.servers[e.serverID].members[args.user];
+
+        var mentionedUser;
+        if(e._disco.bot.servers[e.serverID]) {
+             mentionedUser = e._disco.bot.servers[e.serverID].members[args.user];
+        }
         if(mentionedUser === undefined) {
             str += "**This user is not from this server**\n\n";
             for (var sid in e._disco.bot.servers) {
