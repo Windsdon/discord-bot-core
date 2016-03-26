@@ -13,6 +13,12 @@ function DiscordBotCore(e, callback) {
         process.exit(0);
     }, "Kill the bot");
 
+    e.register.addCommand(["crash"], ["dangerous.crash"], [], function() {
+        setTimeout(function() {
+            this.please.crash = 0;
+        });
+    }, "Crash the bot");
+
     e.register.addCommand(["authkey"], [], [{
         id: "key",
         type: "string",
