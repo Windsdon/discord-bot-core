@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-core",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "description": "A modular Discord bot",
   "keywords": [
     "discord",

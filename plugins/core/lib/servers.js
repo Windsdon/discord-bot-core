@@ -29,6 +29,23 @@ function disable(e, args) {
     e.mention().respond("See you later!");
 }
 
+function blacklist(e, args) {
+    if(args.action == "add") {
+        if(e._disco.blacklist.indexOf(e.serverID) != -1) {
+            return;
+        } else {
+            e._disco.blacklistAdd(e.serverID);
+        }
+    } else {
+        if(e._disco.blacklist.indexOf(e.serverID) == -1) {
+            return;
+        } else {
+            e._disco.blacklistRemove(e.serverID);
+        }
+    }
+}
+
+
 module.exports = function(e) {
     e.register.addCommand(["server", "join"], ["server.join"], [
         {
@@ -42,4 +59,14 @@ module.exports = function(e) {
         enableAll: true
     });
     e.register.addCommand(["disable"], ["management.disable"], [], disable, "Stop monitoring a channel");
+    e.register.addCommand(["blacklist"], ["management.blacklist"], [
+        {
+            id: "action",
+            type: "choice",
+            options: {
+                list: ["add", "remove"]
+            },
+            required: true
+        }
+    ], blacklist, "Change blacklist settings");
 }
