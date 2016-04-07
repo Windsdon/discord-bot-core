@@ -1,7 +1,7 @@
 var logger = require("winston");
 
 module.exports = {
-    version: "1.0.1",
+    version: "1.0.2",
     name: "Define",
     author: "Windsdon",
     init: DefineMod
