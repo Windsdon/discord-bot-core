@@ -2,6 +2,7 @@ var logger = require("winston");
 var async = require("async");
 var execSync = require('child_process').execSync;
 var request = require("request");
+var fs = require('fs');
 
 function banHandler(e, o, callback) {
     // bans are global
@@ -247,9 +248,41 @@ function purge(e, args) {
         logger.debug("Done!");
         e.code("Done!").respond();
     });
+}
 
+function name(e, args) {
+    e._disco.bot.editUserInfo({username: args.name});
+}
 
+function picture(e, args) {
+    if(!args.url) {
+        e._disco.bot.editUserInfo({avatar: fs.readFileSync('avatar.png', 'base64')});
+        return;
+    }
+    request.get(args.url).on('error', function(err) {
+        e.respond(err.message);
+        logger.error(err);
+    }).on('end', function() {
+        try {
+            e._disco.bot.editUserInfo({avatar: fs.readFileSync('avatar.png', 'base64')});
+        } catch(err) {
+            e.code(err.message).respond();
+            logger.error(err);
+        }
+    }).pipe(fs.createWriteStream('avatar.png'));
+}
 
+function playing(e, args) {
+    e._disco.bot.setPresence({game: args.game || null});
+    e._disco.setParam("playing", args.game || null);
+}
+
+function run(e, args) {
+    if(args.flags.as) {
+        e.userID = args.flags.as;
+    }
+    
+    e.command(args._str);
 }
 
 module.exports = function(e) {
@@ -295,6 +328,48 @@ module.exports = function(e) {
         }
     ], purge, "Purge messages on the current channel. --all overrides count.");
 
+    e.register.addCommand(["name"], ["control.name"], [
+        {
+            id: "name",
+            type: "string",
+            required: true
+        }
+    ], name, "Change the bot's name");
+    e.register.addCommand(["picture"], ["control.picture"], [
+        {
+            id: "url",
+            type: "string",
+            required: false
+        }
+    ], picture, "Change the bot's picture (will download from the given url)");
+    e.register.addCommand(["playing"], ["control.playing"], [
+        {
+            id: "game",
+            type: "string",
+            required: false
+        }
+    ], playing, "Change the bot's playing status");
+
+    e._disco.getParam("playing", 0, function(value) {
+        if(value) {
+            e._disco.bot.setPresence({game: value});
+        }
+    })
+
     e.register.addCommand(["eval"], ["dangerous.eval"], [], cmdEval, "Evals stuff");
     e.register.addCommand(["exec"], ["dangerous.exec"], [], cmdExec, "Executes on the shell");
+    e.register.addCommand(["run"], ["dangerous.run"], [
+        {
+            id: "flags",
+            type: "flags",
+            options: {
+                list: [
+                    {
+                        id: "as",
+                        type: "mention"
+                    }
+                ]
+            }
+        }
+    ], run, "Executes a command with extra settings");
 }

@@ -34,6 +34,10 @@ Next, create a file named `login.txt` with your bot's Discord login information,
 ```
 your-bots-email@something.com:your-bots-password
 ```
+or omit the email to use the bot api:
+```
+:your-bots-token
+```
 
 and then run
 ```
