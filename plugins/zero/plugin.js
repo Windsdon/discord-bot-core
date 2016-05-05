@@ -47,7 +47,7 @@ function zeroGrab(e, args) {
                 if($("#children").length != 0) { // results page
                     var path = $("#children").find("li").first().find("a").first().attr("href");
                     logger.debug(`${url} redirects to ${path}`);
-                    e.mention().respond(`Assuming ${args.name} reffers to ${decodeURIComponent(path.replace(/\//g, '').replace(/\+/g, ' '))}`);
+                    e.mention().respond(`Assuming ${args.name} refers to ${decodeURIComponent(path.replace(/\//g, '').replace(/\+/g, ' '))}`);
                     getPage("http://zerochan.net" + path, callback);
                     return;
                 }

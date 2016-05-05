@@ -4,7 +4,7 @@ var fs = require("fs");
 var request = require("request");
 
 module.exports = {
-    version: "1.2.0",
+    version: "1.2.1",
     name: "Emotes",
     author: "Windsdon",
     init: EmoteMod
@@ -177,6 +177,10 @@ function emoteList(e, args) {
         var list = [];
         data.forEach(function(v, i) {
             list.push(v.id);
+        });
+
+        list.sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
         });
 
         e.respond("**List of emotes**\n" + list.join(", "));
