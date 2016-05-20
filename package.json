@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-core",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "A modular Discord bot",
   "keywords": [
     "discord",
@@ -24,11 +24,12 @@
   "dependencies": {
     "async": "^1.5.2",
     "cheerio": "^0.20.0",
-    "chrono-node": "^1.2.1",
+    "chrono-node": "^1.2.3",
     "crypto-js": "^3.1.6",
-    "discord.io": "^1.8.8",
-    "fibers": "^1.0.10",
-    "iconv": "^2.1.11",
+    "discord.io": "^1.10.5",
+    "extend": "^3.0.0",
+    "fibers": "^1.0.13",
+    "iconv": "^2.2.0",
     "markovchain": "^1.0.2",
     "minimist": "^1.2.0",
     "nedb": "^1.8.0",

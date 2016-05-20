@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.2.1",
+    version: "1.3.0",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -51,6 +51,7 @@ function whoisHandler(e, o, callback) {
     var dbUsers = e.db.getDatabase("names");
     var dbAlias = e.db.getDatabase("alias", o.serverID);
     callback = callback || () => {};
+    o.nick = o._disco.getUser(o.userID, o.serverID).nick;
 
     dbUsers.find({
         uid: o.userID
@@ -84,11 +85,24 @@ function whoisHandler(e, o, callback) {
                     }
                 });
             }
+            if((!data[0].nicks) || data[0].nicks.indexOf(o.nick) == -1) {
+                // add new alias
+                dbUsers.update({ _id: data[0]._id }, {
+                    $push: {
+                        nicks: o.nick
+                    }
+                }, {}, function(err, num) {
+                    if(err) {
+                        logger.error(err);
+                    }
+                });
+            }
         } else {
             dbUsers.insert({
                 uid: o.userID,
                 name: o.user,
-                old: [o.user]
+                old: [o.user],
+                nicks: [nick]
             }, function(err, data) {
                 if(err) {
                     logger.error(err);
@@ -175,22 +189,12 @@ function whoisID(e, args) {
 
         str += "**Username:** " + e.clean(d.name) + "\n";
         str += "**UID:** " + d.uid + "\n";
+        if(d.nicks) {
+            str += "**Previous nicks:** " + e.clean(d.nicks.join(", ")) + "\n";
+        }
         str += "**Previous names:** " + e.clean(d.old.join(", ")) + "\n\n";
 
-        var mentionedUser;
-        if(e._disco.bot.servers[e.serverID]) {
-             mentionedUser = e._disco.bot.servers[e.serverID].members[args.user];
-        }
-        if(mentionedUser === undefined) {
-            str += "**This user is not from this server**\n\n";
-            for (var sid in e._disco.bot.servers) {
-                if (e._disco.bot.servers.hasOwnProperty(sid)) {
-                    if(e._disco.bot.servers[sid].members[args.user]) {
-                        mentionedUser = e._disco.bot.servers[sid].members[args.user];
-                    }
-                }
-            }
-        }
+        var mentionedUser = e.getUser(args.user, e.serverID);
 
         if(mentionedUser) {
             try {
@@ -205,7 +209,6 @@ function whoisID(e, args) {
 
             }
         }
-
 
 
         dbAlias.find({
