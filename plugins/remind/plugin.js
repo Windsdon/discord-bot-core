@@ -4,7 +4,7 @@ var async = require('async');
 var crypto = require('crypto');
 
 module.exports = {
-    version: "9.1.0",
+    version: "0.1.0",
     name: "Remind",
     author: "Windsdon",
     init: Remind
