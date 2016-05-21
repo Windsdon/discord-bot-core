@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.3.1",
+    version: "1.3.2",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -51,7 +51,8 @@ function whoisHandler(e, o, callback) {
     var dbUsers = e.db.getDatabase("names");
     var dbAlias = e.db.getDatabase("alias", o.serverID);
     callback = callback || () => {};
-    o.nick = e._disco.getUser(o.userID, o.serverID).nick;
+    var u = e._disco.getUser(o.userID, o.serverID);
+    o.nick = u.nick;
 
     dbUsers.find({
         uid: o.userID
@@ -85,18 +86,48 @@ function whoisHandler(e, o, callback) {
                     }
                 });
             }
-            if((!data[0].nicks) || data[0].nicks.indexOf(o.nick) == -1) {
-                // add new alias
-                dbUsers.update({ _id: data[0]._id }, {
-                    $push: {
-                        nicks: o.nick
+
+            var nickResolve = new Promise(
+                function(resolve) {
+                    if(data[0].nicks) {
+                        resolve();
+                        return;
                     }
-                }, {}, function(err, num) {
-                    if(err) {
+                    dbUsers.update({ _id: data[0]._id }, {
+                        $set: {
+                            nicks: [o.nick]
+                        }
+                    }, {}, function(err, num) {
+                        if(err) {
+                            logger.error(err);
+                        }
+                        resolve();
+                    });
+                }
+            )
+
+            nickResolve.then(function() {
+                dbUsers.find({
+                    uid: o.userID
+                }, function(err, data) {
+                    try {
+                        if(data[0].nicks.indexOf(o.nick) == -1) {
+                            logger.debug("Pushing new nick: " + o.nick);
+                            dbUsers.update({ _id: data[0]._id }, {
+                                $push: {
+                                    nicks: o.nick
+                                }
+                            }, {}, function(err, num) {
+                                if(err) {
+                                    logger.error(err);
+                                }
+                            });
+                        }
+                    } catch(err) {
                         logger.error(err);
                     }
-                });
-            }
+                })
+            });
         } else {
             dbUsers.insert({
                 uid: o.userID,
@@ -172,7 +203,6 @@ function whoisID(e, args) {
     dbUsers.find({
         uid: args.user
     }, function(err, data) {
-        logger.debug(JSON.stringify(data));
         if(err) {
             e.mention().text("This didn't work:\n").code(err.message).respond();
             return;
@@ -185,7 +215,7 @@ function whoisID(e, args) {
         }
 
         var d = data[0];
-
+        logger.debug(JSON.stringify(d));
 
         str += "**Username:** " + e.clean(d.name) + "\n";
         str += "**UID:** " + d.uid + "\n";
