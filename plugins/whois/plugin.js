@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.3.0",
+    version: "1.3.1",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -51,7 +51,7 @@ function whoisHandler(e, o, callback) {
     var dbUsers = e.db.getDatabase("names");
     var dbAlias = e.db.getDatabase("alias", o.serverID);
     callback = callback || () => {};
-    o.nick = o._disco.getUser(o.userID, o.serverID).nick;
+    o.nick = e._disco.getUser(o.userID, o.serverID).nick;
 
     dbUsers.find({
         uid: o.userID
