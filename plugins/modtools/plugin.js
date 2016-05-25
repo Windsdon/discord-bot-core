@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "0.2.0",
+    version: "0.2.1",
     name: "Mod Tools",
     author: "Windsdon",
     init: ModtoolsMod

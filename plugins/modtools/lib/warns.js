@@ -61,8 +61,8 @@ function listWarnings(e, args) {
             return;
         }
 
-        data.sort((a,b) => {
-            if(new Date(a).getTime() < new Date(b).getTime()) {
+        data.sort(function(a,b) {
+            if(new Date(a.timestamp).getTime() < new Date(b.timestamp).getTime()) {
                 return -1;
             } else {
                 return 1;
@@ -71,7 +71,7 @@ function listWarnings(e, args) {
 
         data.forEach(v => {
             var date = moment(new Date(v.timestamp)).fromNow();
-            e.text(`#${v._id} [${date}] _${e.getName(v.givenBy)}_ warned _${e.getName(v.subject)}_: **${v.reason}**`).n();
+            e.text(`\`#${v._id}\` [${date}] _${e.getName(v.givenBy)}_ warned _${e.getName(v.subject)}_: **${v.reason}**`).n();
         })
     }
 
