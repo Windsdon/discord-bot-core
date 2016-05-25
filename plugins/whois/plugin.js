@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.3.3",
+    version: "1.3.4",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -111,7 +111,7 @@ function whoisHandler(e, o, callback) {
                     uid: o.userID
                 }, function(err, data) {
                     try {
-                        if(data[0].nicks.indexOf(o.nick) == -1) {
+                        if(o.nick && data[0].nicks.indexOf(o.nick) == -1) {
                             logger.debug("Pushing new nick: " + o.nick);
                             dbUsers.update({ _id: data[0]._id }, {
                                 $push: {
