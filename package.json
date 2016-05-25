@@ -1,6 +1,6 @@
 {
   "name": "discord-bot-core",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "A modular Discord bot",
   "keywords": [
     "discord",
@@ -32,6 +32,7 @@
     "iconv": "^2.2.0",
     "markovchain": "^1.0.2",
     "minimist": "^1.2.0",
+    "moment": "^2.13.0",
     "nedb": "^1.8.0",
     "request": "^2.72.0",
     "semver": "^5.1.0",

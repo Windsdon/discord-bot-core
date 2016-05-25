@@ -132,20 +132,14 @@ function uid(e, args) {
 
     var users = [];
     var uids = [];
-    for (var sid in e._disco.bot.servers) {
-        if (e._disco.bot.servers.hasOwnProperty(sid)) {
-            for (var uid in e._disco.bot.servers[sid].members) {
-                if (e._disco.bot.servers[sid].members.hasOwnProperty(uid)) {
-                    var name = e._disco.bot.servers[sid].members[uid].user.username;
-                    if(uids.indexOf(uid) == -1 && rx.test(name)) {
-                        users.push({
-                            name: name,
-                            uid: uid
-                        });
-                        uids.push(uid);
-                    }
-                }
-            }
+    for(var uid in e._disco.bot.users) {
+        var name = e._disco.bot.users[uid].username;
+        if(uids.indexOf(uid) == -1 && rx.test(name)) {
+            users.push({
+                name: name,
+                uid: uid
+            });
+            uids.push(uid);
         }
     }
 
