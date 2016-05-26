@@ -70,7 +70,7 @@ function mute(e, args) {
             by: e.userID,
             timestamp: (new Date()).toString()
         }, function(){
-            e.text("**").mention().text("muted ").mention(args.user).respond(`. Reason: **_${args.reason}_` );
+            e.text("**").mention().text("muted ").mention(args.user).respond(`Reason: **_${args.reason}_` );
             e.mod.log("INFO", `**__${e.getName(e.userID)}__ muted __${e.getName(args.user)}__. Reason: ** _${args.reason}_`, e.serverID);
         })
     });
