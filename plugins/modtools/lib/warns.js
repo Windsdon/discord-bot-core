@@ -101,7 +101,3 @@ function listWarnings(e, args) {
     }
 
 }
-
-function mute(e, args) {
-
-}
