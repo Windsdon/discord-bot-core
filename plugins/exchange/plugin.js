@@ -108,7 +108,7 @@ function exchange(e, args) {
         }
     }
 
-    if((new Date()).getTime() - e.mod.lastUpdate > (60 * 60 * 1000) || !e.mod.rates) {
+    if((new Date()).getTime() - e.mod.lastUpdate > (60 * 60 * 1000) || !e.mod.rate) {
         request("http://www.apilayer.net/api/live?access_key=" + e.mod.key, function(err, res, body) {
             if(err) {
                 e.respond("Cannot fetch rates: **" + err.message + "**");
