@@ -31,6 +31,16 @@ function unifyHandler(e, o, cb) {
 
     var msg = `_${moment().format('YYYY-MM-DD HH:mm:ss Z')}_ <#${o.channelID}>: **${o.user}**: ${o.message}`;
 
+    try {
+        //logger.debug(JSON.stringify(o.rawEvent, null, 4));
+        o.rawEvent.d.attachments.forEach(v => {
+            logger.debug(v.url);
+            msg += "\n" + v.url;
+        });
+    } catch(err) {
+
+    }
+
     db.find({
         $or: [
             {
