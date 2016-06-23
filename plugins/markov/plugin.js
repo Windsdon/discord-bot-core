@@ -4,7 +4,7 @@ var fs = require('fs');
 var MarkovChain = require('markovchain');
 
 module.exports = {
-    version: "0.1.0",
+    version: "0.2.0",
     name: "Markov Generator",
     author: "Windsdon",
     init: MarkovMod
@@ -18,14 +18,14 @@ function MarkovMod(e, callback) {
             type: "flags",
             options: {
                 list: [
-                    "size"
+                    "size", "bible"
                 ]
             }
         },
         {
             id: "user",
             type: "mention",
-            required: true
+            required: false
         },
         {
             id: "start",
@@ -35,6 +35,15 @@ function MarkovMod(e, callback) {
     ], imitate, "Generate a sentence based on the user's speech pattern", {
         cooldown: 10
     });
+
+    try {
+        var path = e.db.getStoragePath("quotes");
+
+        this.bible = new MarkovChain(fs.readFileSync(path + '/bible.txt', 'utf8'), function(word) {
+            return word.replace(/[^A-Za-z0-9'çÇÃãÕõÉéóÓÚúÍíáÁ!@#$<>]/gi, '')
+        });
+    } catch(err) {
+    }
 
     callback();
 }
@@ -53,13 +62,18 @@ function markovHandler(e, o, callback) {
 function imitate(e, args) {
     var path = e.db.getStoragePath("quotes");
     var size = args.flags.size || 10;
+    args.user = args.user || e.userID;
     if(size > 30) {
         size = 30;
     }
     try {
-        var quotes = new MarkovChain(fs.readFileSync(path + "/" + args.user + '.txt', 'utf8'), function(word) {
-            return word.replace(/[^A-Za-z0-9'çÇÃãÕõÉéóÓÚúÍíáÁ!@#$<>]/gi, '')
-        });
+        if(args.flags.bible && e.mod.bible) {
+            var quotes = e.mod.bible;
+        } else {
+            var quotes = new MarkovChain(fs.readFileSync(path + "/" + args.user + '.txt', 'utf8'), function(word) {
+                return word.replace(/[^A-Za-z0-9'çÇÃãÕõÉéóÓÚúÍíáÁ!@#$<>]/gi, '')
+            });
+        }
 
         var txt = "";
 
@@ -72,7 +86,11 @@ function imitate(e, args) {
             }).end(size).process();
         }
 
-        e.respond(txt + " - *" + e.getName(args.user) + "*");
+        if(args.flags.bible && e.mod.bible) {
+            e.respond(txt + " - *God?*");
+        } else {
+            e.respond(txt + " - *" + e.getName(args.user) + "*");
+        }
 
     } catch (err) {
         e.mention().respond("I can't generate a sentence for that user!");
