@@ -4,7 +4,7 @@ var async = require('async');
 var crypto = require('crypto');
 
 module.exports = {
-    version: "0.1.0",
+    version: "0.2.0",
     name: "Remind",
     author: "Windsdon",
     init: Remind
@@ -13,7 +13,12 @@ module.exports = {
 var remind = null;
 
 function Remind(e, callback) {
-    e._disco.addCommandHandler(async.apply(remindHandler, e), "start");
+    //e._disco.addCommandHandler(async.apply(remindHandler, e), "start");
+    e.register.addCommand(["remind"], ["remind.remind"], [{
+        id: "rest",
+        type: "rest",
+        required: true
+    }], remind, "Create a remind");
     this.e = e;
     this.reminders = [];
     this.db = this.e.db.getDatabase("reminders");
@@ -168,6 +173,7 @@ function createReminder(creatorUID, channelID, str, subjectUID) {
 
 
 function remindHandler(e, o, callback) {
+    callback = callback || () => {};
     var m = /(?:reminder|remind|remember) *(?:me|<@!?([0-9]+)>)? *(?:to|of|about)? *(.*)/i.exec(o.message);
     if(m) {
         var reminder = createReminder(o.userID, o.channelID, m[2], m[1] || o.userID);
@@ -178,4 +184,8 @@ function remindHandler(e, o, callback) {
     }
 
     callback();
+}
+
+function remind(e, args) {
+    remindHandler(e, e);
 }
