@@ -16,7 +16,7 @@ dialog
 e621
 markov
 ghostbin
-nb
 remind
 modtools
 exchange
+anime
