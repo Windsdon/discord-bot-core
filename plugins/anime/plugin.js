@@ -2,7 +2,7 @@ var request = require('request');
 var logger = require('winston');
 
 module.exports = {
-    version: "0.1.0",
+    version: "0.1.1",
     name: "Anime Search",
     author: "Windsdon",
     init: AnimeMod
@@ -23,7 +23,7 @@ function AnimeMod(e, callback) {
             type: "rest",
             required: true
         }
-    ], animeSearch, "Sarch MyAnimeList");
+    ], animeSearch, "Sarch animes and characters");
 
     callback();
 }
