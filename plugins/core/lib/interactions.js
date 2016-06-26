@@ -133,10 +133,15 @@ function uid(e, args) {
     var users = [];
     var uids = [];
     for(var uid in e._disco.bot.users) {
+        var u = e._disco.getUser(uid, e.serverID);
         var name = e._disco.bot.users[uid].username;
-        if(uids.indexOf(uid) == -1 && rx.test(name)) {
+        if(u) {
+            var nick = u.nick;
+        }
+        if(uids.indexOf(uid) == -1 && rx.test(name) || (nick && rx.test(nick))) {
             users.push({
                 name: name,
+                nick: nick,
                 uid: uid
             });
             uids.push(uid);
@@ -152,7 +157,11 @@ function uid(e, args) {
             str += "**Too many users to list! (" + users.length + ")**";
         } else {
             users.forEach(function(v) {
-                str += `**${v.name}**: \`${v.uid}\`\n`;
+                if(v.nick) {
+                    str += `**${v.name}** (_${v.nick}_): \`${v.uid}\`\n`;
+                } else {
+                    str += `**${v.name}**: \`${v.uid}\`\n`;
+                }
             });
         }
     }
