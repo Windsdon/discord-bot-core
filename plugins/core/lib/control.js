@@ -281,8 +281,26 @@ function run(e, args) {
     if(args.flags.as) {
         e.userID = args.flags.as;
     }
-    
+
     e.command(args._str);
+}
+
+function proxy(e, args) {
+    if(!args.channel && !args.user) {
+        return e.respond("Nowhere to proxy to!");
+    }
+
+    if(args.user) {
+        e.channelID = args.user;
+        e.command(args.command);
+        return;
+    }
+
+    if(args.channel) {
+        e.channelID = args.channel.match(/<#([0-9]+)>/)[1];
+        e.command(args.command);
+        return;
+    }
 }
 
 module.exports = function(e) {
@@ -372,4 +390,23 @@ module.exports = function(e) {
             }
         }
     ], run, "Executes a command with extra settings");
+
+    e.register.addCommand(["proxy"], ["dangerous.proxy"], [
+        {
+            id: "user",
+            type: "mention",
+            required: false
+        },{
+            id: "channel",
+            type: "string",
+            required: false,
+            options: {
+                validation: /^<#[0-9]+>$/
+            }
+        },{
+            id: "command",
+            type: "rest",
+            required: true
+        }
+    ], proxy, "Execute a command and send the results somewhere else");
 }

@@ -144,7 +144,7 @@ function setup(e, callback) {
 
 
 module.exports = {
-    version: "1.6.2",
+    version: "1.7.2",
     name: "Discord Bot Core",
     author: "Windsdon",
     init: DiscordBotCore,
