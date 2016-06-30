@@ -84,7 +84,7 @@ function groupJoin(e, args) {
 function groupLeave(e, args) {
     var uid = args.user ? args.user : e.userID;
     var sid = (args.where == "here" ? e.serverID : undefined);
-    var result = e._disco.pm.addUserToGroup(uid, args.group, sid);
+    var result = e._disco.pm.removeUserFromGroup(uid, args.group, sid);
     if(result.success) {
         e.mention().respond(`Removed ${e.getName(uid)} from \`${args.group}\``);
     }
