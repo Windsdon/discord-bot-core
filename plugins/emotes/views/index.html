@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        <$ title $>
+    </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+    .elem {
+        text-align: center;
+        width: 300px;
+        height: 300px;
+        float: left;
+        margin: 10px;
+    }
+
+    .elem img {
+        max-width: 300px;
+        max-height: 200px;
+    }
+
+    .elem h3 {
+        width: 300px;
+        overflow: hidden;
+        height: 50px;
+        line-height: 50px;
+        margin: 0;
+        padding: 0;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="row" style="margin: 30px">
+        <div class="page-header">
+            <h1>Emote list <small><$ serverName $></small></h1>
+        </div>
+        {% for item in elements %}
+        <div class="elem">
+            <h3><$ item.id $></h3>
+            <img src="<$ item.file $>" alt="<$ item.id $>">
+        </div>
+        {% endfor %}
+    </div>
+    <div style="text-align: center; color: #CCC">
+        Web interface by <strong>Windsdon</strong>
+    </div>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</body>
+
+</html>
