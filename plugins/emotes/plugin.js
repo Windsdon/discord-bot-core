@@ -13,7 +13,7 @@ var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 
 module.exports = {
-    version: "1.3.0",
+    version: "1.3.1",
     name: "Emotes",
     author: "Windsdon",
     init: EmoteMod
@@ -352,7 +352,7 @@ function emoteAdd(e, args) {
                         uid: e.userID,
                         id: args.id,
                         filename: fname
-                    }, { upsert: true }, function(err, numReplaced, upsert) {
+                    }, function(err, data) {
                         e.mention().respond("Emote added!");
                     });
                 });
