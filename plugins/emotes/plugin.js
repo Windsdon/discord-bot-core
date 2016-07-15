@@ -13,7 +13,7 @@ var crypto = require("crypto");
 var CryptoJS = require("crypto-js");
 
 module.exports = {
-    version: "1.3.1",
+    version: "1.3.2",
     name: "Emotes",
     author: "Windsdon",
     init: EmoteMod
@@ -401,7 +401,8 @@ function emoteList(e, args) {
             return a.toLowerCase().localeCompare(b.toLowerCase());
         });
 
-        e.respond("**List of emotes**\n" + (e.mod.url ? e.mod.url + "/emotes/" + e.serverID + "\n": "") + list.join(", "));
+        e.respond("**List of emotes**\n" + (e.mod.url ? e.mod.url + "/emotes/" + e.serverID + "\n": "") + "Or check your PMs for the list.");
+        e.text("**List of emotes**: \n\n" + list.join(", ")).pm();
     });
 }
 
