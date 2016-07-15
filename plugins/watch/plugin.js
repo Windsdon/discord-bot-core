@@ -6,7 +6,7 @@ var crypto = require('crypto');
 var TwitterWatcher = require("./lib/twitter.js");
 
 module.exports = {
-    version: "0.1.0",
+    version: "0.1.1",
     name: "Watcher",
     author: "Windsdon",
     init: WatchMod
@@ -34,7 +34,7 @@ function WatchMod(e, callback) {
                     if(commands) {
                         commands.forEach(function(c) {
                             var stack = ["watch", task.id].concat(c.stack || [])
-                            var permissions = ["watch", "watcher", task.id].concat(c.permissions || []);
+                            var permissions = ["watch.watcher." + task.id + (c.permissions ? "." + c.permissions : "")];
                             var params = c.action ? (c.params || []) : [
                                 {
                                     id: "flags",
@@ -70,14 +70,14 @@ function WatchMod(e, callback) {
     }, 1);
 
     queue.push(list, function(err) {
-        e.register.addCommand(["unwatch"], ["watch", "unwatch"], [
+        e.register.addCommand(["unwatch"], ["watch.unwatch"], [
             {
                 id: "id",
                 type: "string",
                 required: true
             }
         ], unwatch, "Deletes a watcher");
-        e.register.addCommand(["watch", "list"], ["watch", "list"], [
+        e.register.addCommand(["watch", "list"], ["watch.list"], [
             {
                 id: "flags",
                 type: "flags",
