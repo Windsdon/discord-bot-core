@@ -5,9 +5,10 @@ var crypto = require('crypto');
 
 var TwitterWatcher = require("./lib/twitter.js");
 var RedditWatcher = require("./lib/reddit.js");
+var IFTTTWatcher = require("./lib/ifttt.js");
 
 module.exports = {
-    version: "0.2.0",
+    version: "0.3.0",
     name: "Watcher",
     author: "Windsdon",
     init: WatchMod
@@ -24,6 +25,11 @@ function WatchMod(e, callback) {
             id: "reddit",
             name: "reddit",
             watcher: RedditWatcher
+        },
+        {
+            id: "ifttt",
+            name: "IFTTT",
+            watcher: IFTTTWatcher
         }
     ];
 
