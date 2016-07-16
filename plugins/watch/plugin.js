@@ -4,9 +4,10 @@ var async = require('async');
 var crypto = require('crypto');
 
 var TwitterWatcher = require("./lib/twitter.js");
+var RedditWatcher = require("./lib/reddit.js");
 
 module.exports = {
-    version: "0.1.1",
+    version: "0.2.0",
     name: "Watcher",
     author: "Windsdon",
     init: WatchMod
@@ -18,6 +19,11 @@ function WatchMod(e, callback) {
             id: "twitter",
             name: "Twitter",
             watcher: TwitterWatcher
+        },
+        {
+            id: "reddit",
+            name: "reddit",
+            watcher: RedditWatcher
         }
     ];
 
@@ -69,7 +75,7 @@ function WatchMod(e, callback) {
         });
     }, 1);
 
-    queue.push(list, function(err) {
+    queue.drain = function(err) {
         e.register.addCommand(["unwatch"], ["watch.unwatch"], [
             {
                 id: "id",
@@ -104,7 +110,9 @@ function WatchMod(e, callback) {
         });
 
         callback();
-    });
+    };
+
+    queue.push(list);
 }
 
 // handler = handler ID
