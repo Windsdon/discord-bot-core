@@ -113,6 +113,10 @@ class TwitterWatcher extends EventEmitter {
         }
         if(this.args.twitter.screen_name) {
             client.get('statuses/user_timeline', this.args.twitter, function(error, tweets, response) {
+                if(!tweets) {
+                    logger.error("[Twitter] No response");
+                    return;
+                }
                 if(tweets.errors) {
                     logger.error(tweets.errors);
                     return;

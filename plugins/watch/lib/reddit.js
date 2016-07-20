@@ -99,6 +99,10 @@ class RedditSubWatcher extends EventEmitter {
                 return;
             }
 
+            if(!body || !body.data) {
+                return;
+            }
+
             if(body.data.children.length) {
                 self.name = body.data.children[0].data.name;
                 logger.debug(self.name + " on " + body.data.children[0].data.subreddit);
@@ -122,6 +126,20 @@ class RedditSubWatcher extends EventEmitter {
                         when: date.toISOString()
                     });
                 });
+            } else {
+                request("https://api.reddit.com/by_id/" + self.name, function(err, res, body) {
+                    try {
+                        body = JSON.parse(body);
+                    } catch(err) {
+                        logger.debug(body);
+                        logger.error(err);
+                        return;
+                    }
+
+                    if(!body || body.error) {
+                        lookup(true);
+                    }
+                })
             }
         });
     }
