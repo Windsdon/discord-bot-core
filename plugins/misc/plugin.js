@@ -138,9 +138,14 @@ function ship(e, args) {
 
     switch(~~(Math.random() * 2)) {
         case 0:
-            if(s0.length > 2 && s1.length > 2) {
-                shipName = s0.slice(0, Math.max(1, ~~(Math.random() * s0.length)))
-                + " " + s1.slice(-(~~(Math.random() * s1.length) + 1));
+            if(s0.length > 2 || s1.length > 2) {
+                shipName = s0.slice(0, Math.max(1, ~~(Math.random() * s0.length))).join(" ")
+                + " " + s1.slice(Math.min(-(~~(Math.random() * s1.length)) + 1, -1)).join(" ");
+                var t = "";
+                shipName.split(" ").forEach(v => {
+                    t += v.charAt(0).toUpperCase() + v.slice(1) + " ";
+                });
+                shipName = t;
                 break;
             }
             // fallback
