@@ -35,7 +35,14 @@ function MiscMod(e, callback) {
             },
             required: false
         }
-    ], numbertrivia, "Get some number trivia")
+    ], numbertrivia, "Get some number trivia");
+    e.register.addCommand(["ship"], ["misc.ship"], [
+        {
+            id: "subjects",
+            type: "multistr",
+            required: false
+        }
+    ], ship, "Create ship names");
     e.register.addCommand(["lenny"], ["misc.lenny"], [], lenny, "( ͡° ͜ʖ ͡°)");
     e.register.addCommand(["wtf"], ["misc.wtf"], [], wtf, "ಠ_ಠ");
     callback();
@@ -86,4 +93,66 @@ function numbertrivia(e, args) {
 
         e.mention().respond(body);
     });
+}
+
+function trueName(bot, server, uid) {
+    var name = uid;
+    if(bot.users[uid]) {
+        name = bot.users[uid].username;
+    }
+    if(server.members[uid] && server.members[uid].nick) {
+        name = server.members[uid].nick;
+    }
+
+    return name;
+}
+
+function element(arr) {
+    return arr[~~(Math.random() * arr.length)];
+}
+
+function ship(e, args) {
+    if(!args.subjects) {
+        args.subjects = [];
+    }
+
+    while(args.subjects.length < 2) {
+        var members = Object.keys(e._disco.bot.servers[e.serverID].members);
+        var name = trueName(e._disco.bot, e._disco.bot.servers[e.serverID], members[Math.floor(Math.random() * members.length)]);
+        if(args.subjects.indexOf(name) != -1) {
+            continue;
+        }
+        args.subjects.push(name);
+    }
+
+    if(Math.random() > 0.5) {
+        var temp = args.subjects.pop();
+        args.subjects.unshift(temp);
+    }
+
+    var shipName = "";
+    var n0 = args.subjects[0];
+    var n1 = args.subjects[1];
+    var s0 = n0.split(" ");
+    var s1 = n1.split(" ")
+
+    switch(~~(Math.random() * 2)) {
+        case 0:
+            if(s0.length > 2 && s1.length > 2) {
+                shipName = s0.slice(0, Math.max(1, ~~(Math.random() * s0.length)))
+                + " " + s1.slice(-(~~(Math.random() * s1.length) + 1));
+                break;
+            }
+            // fallback
+        case 1:
+            s0 = element(s0);
+            s1 = element(s1);
+            shipName = s0.substring(0, Math.max(2, ~~(Math.random() * s0.length)));
+            shipName += s1.substring(Math.max(2, ~~(Math.random() * s1.length)));
+            shipName = shipName.toLowerCase();
+            shipName = shipName.charAt(0).toUpperCase() + shipName.slice(1);
+            break;
+    }
+
+    e.respond(args.subjects.join(" **and** ") + ": **_" + shipName + "_**");
 }
