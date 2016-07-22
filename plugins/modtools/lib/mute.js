@@ -45,6 +45,7 @@ function muteHandler(e, o, callback) {
                 channel: o.channelID
             }, function(err) {
             });
+            o.directives.disableChilds = true;
             return callback(new Error("User is muted"));
         }
 
