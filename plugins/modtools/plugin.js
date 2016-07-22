@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "0.4.1",
+    version: "0.5.0",
     name: "Mod Tools",
     author: "Windsdon",
     init: ModtoolsMod
@@ -20,7 +20,8 @@ function ModtoolsMod(e, callback) {
             async.apply(require("./lib/rainbow.js"), e),
             async.apply(require("./lib/warns.js"), e),
             async.apply(require("./lib/mute.js"), e),
-            async.apply(require("./lib/unified.js"), e)
+            async.apply(require("./lib/unified.js"), e),
+            async.apply(require("./lib/role.js"), e)
         ],
         callback
     );

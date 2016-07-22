@@ -45,6 +45,7 @@ function muteHandler(e, o, callback) {
                 channel: o.channelID
             }, function(err) {
             });
+            return callback(new Error("User is muted"));
         }
 
         callback();
@@ -52,6 +53,11 @@ function muteHandler(e, o, callback) {
 }
 
 function mute(e, args) {
+
+    if(e.canUser("dangerous.imune.mute")) {
+        return e.mention().respond("**This user is imune to mutes**");
+    }
+
     var db = e.db.getDatabase("mutes", e.serverID);
     db.find({
         uid: args.user
