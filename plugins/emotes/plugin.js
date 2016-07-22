@@ -213,6 +213,10 @@ function makeLog(o, list) {
 // emotes db:
 // id, filename OR config, value
 function emotesHandler(e, o, callback) {
+    if(o.directives.disableChilds) {
+        return callback();
+    }
+
     var dbEmotes = e.db.getDatabase("emotes", o.serverID);
     var path = e.db.getStoragePath("emotes", o.serverID);
 
