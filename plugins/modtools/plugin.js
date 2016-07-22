@@ -21,7 +21,8 @@ function ModtoolsMod(e, callback) {
             async.apply(require("./lib/warns.js"), e),
             async.apply(require("./lib/mute.js"), e),
             async.apply(require("./lib/unified.js"), e),
-            async.apply(require("./lib/role.js"), e)
+            async.apply(require("./lib/role.js"), e),
+            async.apply(require("./lib/autoclean.js"), e)
         ],
         callback
     );
