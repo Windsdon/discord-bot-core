@@ -1,6 +1,6 @@
 var logger = require("winston");
 var async = require("async");
-var Thread = require("./lib/Thread.js");
+var Thread = require("./lib/thread.js");
 
 module.exports = {
     version: "1.0.1",
