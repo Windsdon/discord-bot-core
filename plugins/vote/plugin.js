@@ -3,7 +3,7 @@ var crypto = require("crypto");
 var async = require("async");
 
 module.exports = {
-    version: "0.1.0",
+    version: "0.1.1",
     name: "Voting",
     author: "Windsdon",
     init: VoteMod
@@ -358,7 +358,7 @@ function vote(e, args) {
 
         if(obj.votes[e.userID].indexOf(args.option) != -1) {
             if(obj.settings.feedback) {
-                e.mention().respond("You already voted on that!");
+                e.mention().pm("You already voted on that!");
             }
             return;
         }
@@ -378,7 +378,7 @@ function vote(e, args) {
             }
 
             if(obj.settings.feedback) {
-                e.mention().respond("Vote registered");
+                e.mention().pm("Vote registered");
             }
         });
     }

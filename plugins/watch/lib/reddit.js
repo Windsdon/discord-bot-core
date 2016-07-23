@@ -24,7 +24,12 @@ class RedditLiveWatcher extends EventEmitter {
         super();
         var self = this;
         self.args = args;
-        request.get("https://www.reddit.com/live/" + args.reddit.live + "/about.json", function(err, response, body) {
+        request.get({
+                url: "https://www.reddit.com/live/" + args.reddit.live + "/about.json",
+                headers: {
+                    "User-Agent": "node:discord-reddit-watch:v0.1.0"
+                }
+        }, function(err, response, body) {
             try {
                 var info = JSON.parse(body);
                 if(info.error) {
@@ -96,6 +101,11 @@ class RedditSubWatcher extends EventEmitter {
             } catch(err) {
                 logger.debug(body);
                 logger.error(err);
+                self.lookup(initial);
+                return;
+            }
+
+            if(!body || !body.data) {
                 return;
             }
 
@@ -122,6 +132,26 @@ class RedditSubWatcher extends EventEmitter {
                         when: date.toISOString()
                     });
                 });
+            } else {
+                request({
+                    url: "https://api.reddit.com/by_id/" + self.name,
+                    headers: {
+                        "User-Agent": "node:discord-reddit-watch:v0.1.0"
+                    }
+                }, function(err, res, body) {
+                    try {
+                        body = JSON.parse(body);
+                    } catch(err) {
+                        logger.debug(body);
+                        logger.error(err);
+                        self.lookup(true);
+                        return;
+                    }
+
+                    if(!body || body.error) {
+                        self.lookup(true);
+                    }
+                })
             }
         });
     }

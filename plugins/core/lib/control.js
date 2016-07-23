@@ -19,7 +19,7 @@ function banHandler(e, o, callback) {
 
         if(data.length == 1) {
             callback({
-                message: "You have been banned for: " + data.reason
+                message: "You have been banned for: " + data[0].reason
             });
         } else {
             callback(null);
