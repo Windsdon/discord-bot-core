@@ -37,7 +37,7 @@ function muteHandler(e, o, callback) {
             return callback(err);
         }
 
-        if(data.length) {
+        if(data.length && !e.canUser("dangerous.imune.mute")) {
             logger.debug("Delete message due to mute!");
             e._disco.logOnChannel(`Removed a message from **${o.user}**. Reason: _${data[0].reason}_`);
             e._disco.bot.deleteMessage({
@@ -46,7 +46,9 @@ function muteHandler(e, o, callback) {
             }, function(err) {
             });
             o.directives.disableChilds = true;
-            return callback(new Error("User is muted"));
+            err = new Error("User is muted");
+            err.silent = true;
+            return callback(err);
         }
 
         callback();
@@ -54,9 +56,9 @@ function muteHandler(e, o, callback) {
 }
 
 function mute(e, args) {
-
-    if(e.canUser("dangerous.imune.mute")) {
-        return e.mention().respond("**This user is imune to mutes**");
+    if(e.canUser("dangerous.imune.mute", args.user, e.serverID)) {
+        e.mention().respond("**This user is imune to mutes**");
+        return;
     }
 
     var db = e.db.getDatabase("mutes", e.serverID);
