@@ -37,7 +37,7 @@ function muteHandler(e, o, callback) {
             return callback(err);
         }
 
-        if(data.length && !e.canUser("dangerous.imune.mute")) {
+        if(data.length) {
             logger.debug("Delete message due to mute!");
             e._disco.logOnChannel(`Removed a message from **${o.user}**. Reason: _${data[0].reason}_`);
             e._disco.bot.deleteMessage({
