@@ -2,7 +2,7 @@ var logger = require("winston");
 var async = require("async");
 
 module.exports = {
-    version: "1.3.4",
+    version: "1.4.0",
     name: "User identifier",
     author: "Windsdon",
     init: WhoisMod
@@ -16,7 +16,10 @@ function WhoisMod(e, callback) {
         {
             id: "user",
             type: "mention",
-            required: false
+            required: false,
+            options: {
+                multi: true
+            }
         }
     ], whoisID, "View user aliases");
 
@@ -195,66 +198,115 @@ function whoisID(e, args) {
     var dbAlias = e.db.getDatabase("alias", e.serverID);
     var dbUsers = e.db.getDatabase("names");
 
-    args.user = args.user || e.userID;
-
     var str = "";
 
-    //get alias
-    dbUsers.find({
-        uid: args.user
-    }, function(err, data) {
-        if(err) {
-            e.mention().text("This didn't work:\n").code(err.message).respond();
-            return;
-        }
-
-        if(data.length == 0) {
-            logger.debug("No info for user!");
-            e.mention().respond("I have no info on this person");
-            return;
-        }
-
-        var d = data[0];
-        logger.debug(JSON.stringify(d));
-
-        str += "**Username:** " + e.clean(d.name) + "\n";
-        str += "**UID:** " + d.uid + "\n";
-        if(d.nicks) {
-            str += "**Previous nicks:** " + e.clean(sanitizeData(d.nicks).join(", ")) + "\n";
-        }
-        str += "**Previous names:** " + e.clean(sanitizeData(d.old).join(", ")) + "\n\n";
-
-        var mentionedUser = e.getUser(args.user, e.serverID);
-
-        if(mentionedUser) {
-            try {
-                str += `**Discriminator:** ${mentionedUser.user.discriminator}\n`;
-                str += `**Avatar URL:** https://cdn.discordapp.com/avatars/${mentionedUser.user.id}/${mentionedUser.user.avatar}.jpg\n`
-                str += `**Joined at:** ${new Date(Date.parse(mentionedUser.joined_at))}\n`
-                str += `**Current status:** ${mentionedUser.status ? mentionedUser.status: "Offline"}\n`;
-                if (mentionedUser.game != null) {
-                    str += `**Playing:** ${e.clean(mentionedUser.game.name)}\n`
-                }
-            } catch(err2) {
-
+    if(args.user) {
+        if(typeof args.user === "string") {
+            return _whois();
+        } else if(args.user.length == 1) {
+            args.user = args.user[0];
+            return _whois();
+        } else {
+            if(args.user.length > 20) {
+                return e.mention().respond("Please be more specific!");
             }
+            var list = args.user;
+            var l = [];
+            for(var i = 0; i < list.length; i++) {
+                l.push("" + (i + 1));
+            }
+
+            e.text("I found these:\n\n");
+
+            list.forEach(function(v, i) {
+                var u = e.getUser(v, e.serverID);
+                if(!u) {
+                    u = {};
+                }
+                e.text(`**${i + 1}**: _${u.username}_ ${u.nick ? "(" + u.nick + ")" : ""}\n`);
+            });
+
+            e.respond("\n\n**Which one?** Send a message with the number you want more info on.");
+            e.expect([
+                {
+                    id: "i",
+                    type: "choice",
+                    required: true,
+                    options: {
+                        list: l
+                    }
+                }
+            ]).then(function(a) {
+                args.user = list[a.i - 1];
+                _whois();
+            }).catch(function(err) {
+                e.mention().respond("That option is invalid!");
+            });
         }
+    } else {
+        args.user = e.userID;
+        return _whois();
+    }
 
-
-        dbAlias.find({
-            uid: d.uid
+    function _whois() {
+        var uid = args.user;
+        //get alias
+        dbUsers.find({
+            uid: uid
         }, function(err, data) {
             if(err) {
                 e.mention().text("This didn't work:\n").code(err.message).respond();
                 return;
             }
-            if(data.length != 0) {
-                str += "**Alias:** " + data[0].alias
+
+            if(data.length == 0) {
+                logger.debug("No info for user!");
+                e.mention().respond("I have no info on this person");
+                return;
             }
 
-            e.mention().n().respond(str);
-        });
-    })
+            var d = data[0];
+            logger.debug(JSON.stringify(d));
+
+            str += "**Username:** " + e.clean(d.name) + "\n";
+            str += "**UID:** " + d.uid + "\n";
+            if(d.nicks) {
+                str += "**Previous nicks:** " + e.clean(sanitizeData(d.nicks).join(", ")) + "\n";
+            }
+            str += "**Previous names:** " + e.clean(sanitizeData(d.old).join(", ")) + "\n\n";
+
+            var mentionedUser = e.getUser(args.user, e.serverID);
+
+            if(mentionedUser) {
+                try {
+                    str += `**Discriminator:** ${mentionedUser.user.discriminator}\n`;
+                    str += `**Avatar URL:** https://cdn.discordapp.com/avatars/${mentionedUser.user.id}/${mentionedUser.user.avatar}.jpg\n`
+                    str += `**Joined at:** ${new Date(Date.parse(mentionedUser.joined_at))}\n`
+                    str += `**Current status:** ${mentionedUser.status ? mentionedUser.status: "Offline"}\n`;
+                    if (mentionedUser.game != null) {
+                        str += `**Playing:** ${e.clean(mentionedUser.game.name)}\n`
+                    }
+                } catch(err2) {
+
+                }
+            }
+
+
+            dbAlias.find({
+                uid: d.uid
+            }, function(err, data) {
+                if(err) {
+                    e.mention().text("This didn't work:\n").code(err.message).respond();
+                    return;
+                }
+                if(data.length != 0) {
+                    str += "**Alias:** " + data[0].alias
+                }
+
+                e.mention().n().respond(str);
+            });
+        })
+    }
 }
 
 function whoisSet(e, args) {
