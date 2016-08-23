@@ -13,6 +13,29 @@ function NB(e, callback) {
     this.poke = new (require("./lib/poke.js"))(e);
 
     //e._disco.addCommandHandler(async.apply(forumHandler, e), "start");
+    e._disco.addCommandHandler(function(o, cb) {
+        var mornings = [
+            "Bom dia",
+            "BAN dia",
+            "Bundinha",
+            "guter Tag",
+            "Good morning",
+            "يوم جميل",
+            "美好的一天",
+            "goedendag",
+            "bonne journée",
+            "καλημέρα",
+            "יום טוב",
+            "buongiorno",
+            "良い一日",
+            "buen día",
+            "bra dag"
+        ];
+        if(o.message.match(/^((ban|bom|bum) dia|bundinha)$/i)) {
+            e._disco.queueMessage(o.channelID, `<@${o.userID}> ${mornings[Math.floor(Math.random() * mornings.length)]}`);
+        }
+        cb();
+    }, "start");
 
     e.register.addCommand(["nb", "thread"], ["nb.thread"], [
         {
