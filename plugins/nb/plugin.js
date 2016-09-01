@@ -1,6 +1,9 @@
 var logger = require("winston");
 var async = require("async");
 var Thread = require("./lib/thread.js");
+var Forum = require("./lib/forum.js");
+var PrivateMessage = require("./lib/pm.js");
+var fs = require("fs");
 
 module.exports = {
     version: "1.0.1",
@@ -8,6 +11,9 @@ module.exports = {
     author: "Windsdon",
     init: NB
 }
+
+var forum = null;
+var pm = null;
 
 function NB(e, callback) {
     this.poke = new (require("./lib/poke.js"))(e);
@@ -54,7 +60,33 @@ function NB(e, callback) {
         });
     }, "Debug: get thread");
 
-    callback();
+    e.register.addCommand(["blast", "pm"], ["nb.pm"], [
+        {
+            id: "user",
+            type: "string",
+            required: true
+        }, {
+            id: "subject",
+            type: "string",
+            required: true
+        }, {
+            id: "message",
+            type: "rest",
+            required: true
+        }
+    ], nbpm, "Send a PM");
+
+
+    var login = JSON.parse(fs.readFileSync("./nb.json"));
+
+    forum = new Forum(login.user, login.pass, function() {
+        if(forum.ready) {
+            pm = new PrivateMessage(forum);
+            require("./lib/verify.js")(pm, e, callback);
+        } else {
+            callback();
+        }
+    });
 }
 
 function forumHandler(e, o, callback) {
@@ -69,4 +101,16 @@ function forumHandler(e, o, callback) {
     }
 
     callback();
+}
+
+function nbpm(e, args) {
+    if(pm) {
+        pm.send(args.user, args.subject, args.message).then(() => {
+            e.respond("**Mensagem enviada**");
+        }, () => {
+            e.respond("**Falha ao enviar mensagem**");
+        });
+    } else {
+        e.respond("**Não foi possível conectar com o fórum**");
+    }
 }
