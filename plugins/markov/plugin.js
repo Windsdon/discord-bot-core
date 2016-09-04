@@ -2,9 +2,10 @@ var logger = require("winston");
 var async = require("async");
 var fs = require('fs');
 var MarkovChain = require('markovchain');
+var Markov = require("./lib/markov.js");
 
 module.exports = {
-    version: "0.2.0",
+    version: "1.0.0",
     name: "Markov Generator",
     author: "Windsdon",
     init: MarkovMod
@@ -33,6 +34,30 @@ function MarkovMod(e, callback) {
             required: false
         }
     ], imitate, "Generate a sentence based on the user's speech pattern", {
+        cooldown: 10
+    });
+
+    e.register.addCommand(["i"], ["markov.imitate"], [
+        {
+            id: "flags",
+            type: "flags",
+            options: {
+                list: [
+                    "size", "order"
+                ]
+            }
+        },
+        {
+            id: "user",
+            type: "mention",
+            required: false
+        },
+        {
+            id: "start",
+            type: "rest",
+            required: false
+        }
+    ], imitateNew, "Generate a sentence based on the user's speech pattern (new algorithm)", {
         cooldown: 10
     });
 
@@ -94,5 +119,31 @@ function imitate(e, args) {
 
     } catch (err) {
         e.mention().respond("I can't generate a sentence for that user!");
+    }
+}
+
+function imitateNew(e, args) {
+    var path = e.db.getStoragePath("quotes");
+    var size = args.flags.size || 10;
+    var order = args.flags.order || 4;
+    args.user = args.user || e.userID;
+    if(size > 30) {
+        size = 30;
+    }
+    try {
+        var quotes = new Markov(order, false);
+        var all = fs.readFileSync(path + "/" + args.user + '.txt', 'utf8').replace(/[{}()/]/g, "").split(/\n/);
+        all.forEach(str => quotes.feed(str));
+
+        var txt = quotes.generate({
+            start: args.start,
+            size: size
+        });
+
+        e.respond(txt + " - *" + e.getName(args.user) + "*");
+
+    } catch (err) {
+        logger.error(err);
+        e.mention().respond("I can't generate a sentence for that user! - " + err.message);
     }
 }
