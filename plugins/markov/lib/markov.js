@@ -9,6 +9,10 @@ function pickWeighted(o) {
         }
     }
 
+    if(sum == 0) {
+        return Object.keys(o)[Math.floor(Object.keys(o).length * Math.random())];
+    }
+
     var n = Math.random() * sum;
 
     for(var i in o) {
