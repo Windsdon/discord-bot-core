@@ -5,7 +5,7 @@ var MarkovChain = require('markovchain');
 var Markov = require("./lib/markov.js");
 
 module.exports = {
-    version: "1.0.0",
+    version: "1.1.0",
     name: "Markov Generator",
     author: "Windsdon",
     init: MarkovMod
