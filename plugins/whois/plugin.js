@@ -55,7 +55,11 @@ function whoisHandler(e, o, callback) {
     var dbAlias = e.db.getDatabase("alias", o.serverID);
     callback = callback || () => {};
     var u = e._disco.getUser(o.userID, o.serverID);
-    o.nick = u.nick;
+    try {
+        o.nick = u.nick;
+    } catch(err) {
+        return callback();
+    }
 
     dbUsers.find({
         uid: o.userID
