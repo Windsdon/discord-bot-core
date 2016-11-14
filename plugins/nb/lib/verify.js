@@ -115,7 +115,7 @@ function iduser(e, args) {
         if(!err && docs.length) {
             e.respond(`**${e.getName(args.user)}** é __**${docs[0].name}**__ no fórum.`);
         } else {
-            e.repond(`**${e.getName(args.user)}** não foi verificado.`);
+            e.respond(`**${e.getName(args.user)}** não foi verificado.`);
         }
     });
 }
